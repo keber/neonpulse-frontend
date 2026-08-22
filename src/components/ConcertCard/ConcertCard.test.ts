@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { type ConcertModel, ConcertStatus } from '../../models';
+import { type ConcertModel, ConcertStatus } from '@/models';
 import { generateConcertCardHTML } from './ConcertCard';
 
 function buildConcert(overrides: Partial<ConcertModel> = {}): ConcertModel {

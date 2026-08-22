@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ConcertStatus } from '../models';
+import { ConcertStatus } from '@/models';
 import { concertsLists } from './concerts.mocks';
 
 describe('concertsLists', () => {

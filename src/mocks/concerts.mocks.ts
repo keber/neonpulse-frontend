@@ -1,4 +1,4 @@
-import {type ConcertModel, ConcertStatus} from "../models";
+import {type ConcertModel, ConcertStatus} from '@/models';
 
 export const concertsLists: ConcertModel[] = [
     {
