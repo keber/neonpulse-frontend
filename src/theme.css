@@ -1,0 +1,34 @@
+/*
+ * Tokens de diseño compartidos — paleta neón de NeonPulse, como @theme de
+ * Tailwind. Cada hoja de estilos que necesite las utilidades derivadas de
+ * estos tokens (bg-accent, text-foreground, from-accent, etc.) o que use
+ * @apply con ellas debe importar este archivo, para no duplicar la paleta
+ * en varios lugares (style.css y ConcertCard.css antes la repetían cada
+ * uno con su propio prefijo).
+ */
+@theme {
+    --color-bg: #0b0710;
+    --color-surface-from: #1a1025;
+    --color-surface-to: #0b0710;
+    --color-border: rgba(255, 255, 255, 0.08);
+    --color-foreground: #beb8d1;
+    --color-foreground-strong: #ffffff;
+    --color-accent: #ff2e9a;
+    --color-accent-2: #7c3aed;
+    --color-live: #ff3b3b;
+    --color-finished: #6b7280;
+
+    --font-sans: 'Segoe UI', system-ui, -apple-system, sans-serif;
+
+    /* Pulso de la etiqueta de estado "En vivo" */
+    --animate-pulse-status: concert-card-pulse 1.6s ease-in-out infinite;
+    @keyframes concert-card-pulse {
+        0%,
+        100% {
+            opacity: 1;
+        }
+        50% {
+            opacity: 0.5;
+        }
+    }
+}

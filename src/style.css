@@ -1,102 +1,86 @@
+@import 'tailwindcss';
+@import './theme.css';
+
 /*
  * Estilo general del sitio — NeonPulse, cartelera de conciertos.
- * Tema oscuro con acentos neón (rosa/violeta), a tono con el ticket
- * de src/components/ConcertCard/ConcertCard.css, pero sin acoplarse a él:
- * este archivo solo gobierna el "shell" de la página (fondo, tipografía,
- * encabezado y la grilla que organiza las tarjetas).
+ * Tema oscuro con acentos neón (rosa/violeta), a tono con el ticket de
+ * src/components/ConcertCard/ConcertCard.css. La paleta compartida vive en
+ * theme.css; aquí solo se gobierna el "shell" de la página (fondo,
+ * tipografía, encabezado y la grilla que organiza las tarjetas).
  */
 
-* {
-    box-sizing: border-box;
+:root {
+    --bg-glow:
+        radial-gradient(
+            circle at 15% -10%,
+            color-mix(in srgb, var(--color-accent-2) 35%, transparent),
+            transparent 45%
+        ),
+        radial-gradient(
+            circle at 90% 0%,
+            color-mix(in srgb, var(--color-accent) 25%, transparent),
+            transparent 40%
+        );
+    color-scheme: dark;
 }
 
-:root {
-    --bg: #0b0710;
-    --bg-glow: radial-gradient(
-        circle at 15% -10%,
-        rgba(124, 58, 237, 0.35),
-        transparent 45%
-    ),
-    radial-gradient(circle at 90% 0%, rgba(255, 46, 154, 0.25), transparent 40%);
-    --text: #beb8d1;
-    --text-strong: #ffffff;
-    --accent: #ff2e9a;
-    --accent-2: #7c3aed;
-    --border: rgba(255, 255, 255, 0.08);
-
-    font: 16px/1.5 'Segoe UI', system-ui, -apple-system, sans-serif;
-    color-scheme: dark;
+* {
+    @apply box-border;
 }
 
 html,
 body {
-    margin: 0;
-    min-height: 100%;
+    @apply m-0 min-h-full;
 }
 
 body {
-    color: var(--text);
-    background: var(--bg-glow), var(--bg);
+    @apply font-sans text-base text-foreground;
+    background: var(--bg-glow), var(--color-bg);
     background-attachment: fixed;
 }
 
 ::selection {
-    color: #fff;
-    background: var(--accent-2);
+    @apply bg-accent-2 text-white;
 }
 
 #app {
-    max-width: 960px;
-    margin: 0 auto;
-    padding: 56px 24px 80px;
+    @apply mx-auto max-w-[960px] px-6 pt-14 pb-20;
 }
 
 #app > h1 {
-    margin: 0 0 8px;
-    font-size: 44px;
-    font-weight: 800;
-    letter-spacing: -1px;
-    background: linear-gradient(90deg, var(--text-strong), var(--accent) 65%, var(--accent-2));
+    @apply m-0 mb-2 text-[44px] font-extrabold tracking-tight text-transparent;
+    background: linear-gradient(90deg, var(--color-foreground-strong), var(--color-accent) 65%, var(--color-accent-2));
     background-clip: text;
     -webkit-background-clip: text;
-    color: transparent;
 }
 
 #app > p {
-    margin: 0;
-    font-size: 16px;
-    color: var(--text);
-    opacity: 0.8;
+    @apply m-0 text-base text-foreground opacity-80;
 }
 
 #catalog-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 20px;
-    margin-top: 40px;
+    @apply mt-10 grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-5;
 }
 
 /* Dentro de la grilla, cada tarjeta ocupa su celda en vez de auto-centrarse */
 #catalog-container .concert-card {
-    max-width: none;
-    margin: 0;
+    @apply m-0 max-w-none;
 }
 
 #footer:empty {
-    display: none;
+    @apply hidden;
 }
 
 @media (max-width: 640px) {
     #app {
-        padding: 40px 16px 56px;
+        @apply px-4 pt-10 pb-14;
     }
 
     #app > h1 {
-        font-size: 32px;
+        @apply text-[32px];
     }
 
     #catalog-container {
-        grid-template-columns: 1fr;
-        margin-top: 28px;
+        @apply mt-7 grid-cols-1;
     }
 }
