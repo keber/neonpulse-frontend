@@ -1,5 +1,6 @@
 // Componente HTML que recibe un objeto de tipo Concert y renderiza una tarjeta con la información del concierto.
 import { type ConcertModel, ConcertStatus } from '../../models';
+import { icon } from '../icons';
 
 const STATUS_LABELS: Record<ConcertStatus, string> = {
     [ConcertStatus.SCHEDULED]: 'Próximo',
@@ -40,8 +41,8 @@ export function generateConcertCardHTML(concert: ConcertModel): string {
                 <h3 class="concert-card__title">${concert.title}</h3>
                 <p class="concert-card__band">${concert.band}</p>
                 <div class="concert-card__meta">
-                    <span class="concert-card__location">📍 ${concert.location}</span>
-                    ${concert.time ? `<span class="concert-card__time">🕗 ${concert.time}</span>` : ''}
+                    <span class="concert-card__location">${icon('map-pin')} ${concert.location}</span>
+                    ${concert.time ? `<span class="concert-card__time">${icon('clock')} ${concert.time}</span>` : ''}
                 </div>
             </div>
         </article>
