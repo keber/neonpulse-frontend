@@ -17,5 +17,40 @@ export const concertsLists: ConcertModel[] = [
         date: new Date('2026-09-10'),
         location: 'Movistar Arena',
         status: ConcertStatus.SCHEDULED
+    },
+    {
+        id: '3',
+        title: 'Neon Nights Festival',
+        band: 'Arctic Monkeys',
+        date: new Date('2026-08-22'),
+        time: '21:30',
+        location: 'Parque Bicentenario',
+        status: ConcertStatus.LIVE
+    },
+    {
+        id: '4',
+        title: 'Symphony Under the Stars',
+        band: 'Metallica',
+        date: new Date('2025-11-02'),
+        time: '19:00',
+        location: 'Anfiteatro Vespucio',
+        status: ConcertStatus.FINISHED
+    },
+    {
+        id: '5',
+        title: 'Electric Dreams Tour',
+        band: 'Daft Punk',
+        date: new Date('2026-12-05'),
+        location: 'Espacio Riesco',
+        status: ConcertStatus.CANCELED
+    },
+    {
+        id: '6',
+        title: 'Indie Sunset Sessions',
+        band: 'Tame Impala',
+        date: new Date('2026-10-18'),
+        time: '18:45',
+        location: "Parque O'Higgins",
+        status: ConcertStatus.SCHEDULED
     }
 ];
