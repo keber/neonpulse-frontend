@@ -1,29 +1,24 @@
 // import './style.css'
 
-/*
-const saludo: string = 'Hola, soy un nuevo proyecto'
-const despedida: string = 'Adiós, soy un footer!'
-const numero: number = 42
-*/
+import { concertsLists } from './mocks/concerts.mocks';
 
 const appContainer = document.getElementById('app');
 
+console.log("Hola, Mundo!");
+console.log(concertsLists);
 
-/*
-document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-<div>${saludo} - ${numero}</div>
-`
-
-
-document.querySelector<HTMLDivElement>('#footer')!.innerHTML = `
-<div>${despedida}</div>
-`
-
-*/
+const listContainer = document.createElement('ul');
+listContainer.innerHTML = concertsLists.reduce((acc, concert) => {
+    return (
+        acc +
+        `<li>${concert.title} - ${concert.band} - ${concert.date.toDateString()}</li>`
+    );
+}, '');
 
 if (appContainer){
     appContainer.innerHTML = `
-    <h1>NeonPulse</H1>
-    <p>Entorno de desarrollo inicializado con Vite y VanillaJS</p>
-    `
+        <h1>NeonPulse</H1>
+        <p>Entorno de desarrollo inicializado con Vite y VanillaJS</p>
+        `
+    appContainer.appendChild(listContainer);
 }
