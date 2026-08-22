@@ -1,24 +1,29 @@
-// import './style.css'
+import './style.css';
 
 import { concertsLists } from './mocks/concerts.mocks';
+import { generateConcertCardHTML } from "./components/ConcertCard";
 
 const appContainer = document.getElementById('app');
 
-console.log("Hola, Mundo!");
-console.log(concertsLists);
 
-const listContainer = document.createElement('ul');
-listContainer.innerHTML = concertsLists.reduce((acc, concert) => {
-    return (
-        acc +
-        `<li>${concert.title} - ${concert.band} - ${concert.date.toDateString()}</li>`
-    );
-}, '');
+if(appContainer){
+    const concertGridHTML = concertsLists
+        .toSorted((a, b) => a.date.getTime() - b.date.getTime())
+        .map((concert) => generateConcertCardHTML(concert)
+    ).join('');
 
-if (appContainer){
+    /*
+    Componente átomo: ConcertCard
+    Componente molecula: ConcertGrid
+    Componente organismo: ConcertCatalog
+    Componente sistema: App
+     */
     appContainer.innerHTML = `
         <h1>NeonPulse</H1>
-        <p>Entorno de desarrollo inicializado con Vite y VanillaJS</p>
-        `
-    appContainer.appendChild(listContainer);
+        <p>Cartelera Oficial de Conciertos y Eventos en Vivo</p>
+        
+        <main id="catalog-container">
+        ${concertGridHTML}
+        </main>
+        `;
 }
