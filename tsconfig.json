@@ -14,6 +14,11 @@
     "moduleDetection": "force",
     "noEmit": true,
 
+    /* Alias de imports: @/models en vez de ../../models */
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+
     /* Linting */
     "noUnusedLocals": true,
     "noUnusedParameters": true,
