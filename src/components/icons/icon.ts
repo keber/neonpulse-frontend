@@ -1,22 +1,34 @@
-// Átomo que envuelve lucide-static: expone el SVG crudo de un ícono como
-// string, listo para interpolar en un template literal de HTML (el resto
-// de los componentes del proyecto, como ConcertCard, renderizan devolviendo
-// strings en vez de nodos del DOM, así que un ícono como string encaja sin
-// necesitar ningún framework).
+// Átomo que envuelve lucide-static: expone el SVG de un ícono como un
+// elemento real del DOM, listo para insertarlo con appendChild/append.
 import calendarSvg from 'lucide-static/icons/calendar.svg?raw';
 import clockSvg from 'lucide-static/icons/clock.svg?raw';
 import mapPinSvg from 'lucide-static/icons/map-pin.svg?raw';
 
-const ICONS = {
+const ICON_SOURCES = {
     calendar: calendarSvg,
     clock: clockSvg,
     'map-pin': mapPinSvg,
 } as const;
 
-export type IconName = keyof typeof ICONS;
+export type IconName = keyof typeof ICON_SOURCES;
+
+// Un <template> por ícono, parseado una sola vez y cacheado — el SVG crudo
+// viene del paquete lucide-static (no de datos dinámicos), así que asignarlo
+// a innerHTML es seguro. Cada llamada a icon() solo clona ese <template>.
+const iconTemplates = new Map<IconName, HTMLTemplateElement>();
+
+function getTemplate(name: IconName): HTMLTemplateElement {
+    let template = iconTemplates.get(name);
+    if (!template) {
+        template = document.createElement('template');
+        template.innerHTML = ICON_SOURCES[name].replace(/<!--[\s\S]*?-->\s*/, '');
+        iconTemplates.set(name, template);
+    }
+    return template;
+}
 
 /**
- * Devuelve el SVG de un ícono de lucide-static como string.
+ * Devuelve un nuevo elemento <svg> con el ícono pedido.
  *
  * - Se marca `aria-hidden="true"` porque estos íconos siempre van junto a
  *   texto que ya describe su significado (son decorativos, no la única
@@ -24,9 +36,9 @@ export type IconName = keyof typeof ICONS;
  * - El tamaño y color se controlan con utilidades de Tailwind (por defecto
  *   `w-4 h-4 shrink-0`; el color lo hereda de `currentColor`).
  */
-export function icon(name: IconName, className = 'w-4 h-4 shrink-0'): string {
-    return ICONS[name]
-        .replace(/<!--[\s\S]*?-->\s*/, '')
-        .replace(/\s*class="[^"]*"/, '')
-        .replace('<svg', `<svg aria-hidden="true" class="${className}"`);
+export function icon(name: IconName, className = 'w-4 h-4 shrink-0'): SVGSVGElement {
+    const svg = getTemplate(name).content.firstElementChild!.cloneNode(true) as SVGSVGElement;
+    svg.setAttribute('aria-hidden', 'true');
+    svg.setAttribute('class', className);
+    return svg;
 }

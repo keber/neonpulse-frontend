@@ -15,9 +15,9 @@ export function getStatusModifier(status: ConcertStatus): string {
     return status.toLowerCase();
 }
 
-export function generateStatusBadgeHTML(status: ConcertStatus): string {
-    const modifier = getStatusModifier(status);
-    const label = STATUS_LABELS[status];
-
-    return `<span class="concert-card__status concert-card__status--${modifier}">${label}</span>`;
+export function createStatusBadgeElement(status: ConcertStatus): HTMLElement {
+    const badge = document.createElement('span');
+    badge.className = `concert-card__status concert-card__status--${getStatusModifier(status)}`;
+    badge.textContent = STATUS_LABELS[status];
+    return badge;
 }
