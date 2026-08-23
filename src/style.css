@@ -5,8 +5,8 @@
  * Estilo general del sitio — NeonPulse, cartelera de conciertos.
  * Tema oscuro con acentos neón (rosa/violeta), a tono con el ticket de
  * src/components/ConcertCard/ConcertCard.css. La paleta compartida vive en
- * theme.css; aquí solo se gobierna el "shell" de la página (fondo,
- * tipografía, encabezado y la grilla que organiza las tarjetas).
+ * theme.css; aquí solo se gobierna el "shell" de la página (header, footer,
+ * secciones y la grilla que organiza las tarjetas).
  */
 
 :root {
@@ -34,7 +34,9 @@ body {
 }
 
 body {
-    @apply font-sans text-base text-foreground;
+    /* flex column + footer con mt-auto: el footer queda pegado abajo aunque
+       el catálogo tenga pocas tarjetas, en vez de flotar a mitad de pantalla. */
+    @apply flex min-h-full flex-col font-sans text-base text-foreground;
     background: var(--bg-glow), var(--color-bg);
     background-attachment: fixed;
 }
@@ -43,11 +45,13 @@ body {
     @apply bg-accent-2 text-white;
 }
 
-#app {
-    @apply mx-auto max-w-[960px] px-6 pt-14 pb-20;
+/* Encabezado */
+
+.site-header {
+    @apply mx-auto max-w-[960px] px-6 pt-14 pb-2;
 }
 
-#app > h1 {
+.site-header h1 {
     @apply m-0 mb-2 text-[44px] font-extrabold tracking-tight text-transparent;
     background: linear-gradient(
         90deg,
@@ -59,12 +63,22 @@ body {
     -webkit-background-clip: text;
 }
 
-#app > p {
+.site-header p {
     @apply m-0 text-base text-foreground opacity-80;
 }
 
+/* Contenido principal */
+
+#app {
+    @apply mx-auto flex w-full max-w-[960px] flex-1 flex-col gap-10 px-6 pt-8 pb-20;
+}
+
+.section-heading {
+    @apply m-0 mb-4 text-lg font-bold tracking-tight text-foreground-strong;
+}
+
 #catalog-container {
-    @apply mt-10 grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-5;
+    @apply grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-5;
 }
 
 /* Dentro de la grilla, cada tarjeta ocupa su celda en vez de auto-centrarse */
@@ -72,20 +86,34 @@ body {
     @apply m-0 max-w-none;
 }
 
-#footer:empty {
-    @apply hidden;
+.catalog-empty {
+    @apply m-0 rounded-2xl border border-dashed border-border p-10 text-center text-foreground opacity-70;
+}
+
+/* Footer */
+
+.site-footer {
+    @apply mx-auto mt-auto w-full max-w-[960px] border-t border-border px-6 py-6 text-center text-sm text-foreground opacity-60;
 }
 
 @media (max-width: 640px) {
-    #app {
-        @apply px-4 pt-10 pb-14;
+    .site-header {
+        @apply px-4 pt-10 pb-2;
     }
 
-    #app > h1 {
+    .site-header h1 {
         @apply text-[32px];
     }
 
+    #app {
+        @apply px-4 pt-6 pb-14;
+    }
+
     #catalog-container {
-        @apply mt-7 grid-cols-1;
+        @apply grid-cols-1;
+    }
+
+    .site-footer {
+        @apply px-4;
     }
 }

@@ -9,6 +9,7 @@ export const concertsLists: ConcertModel[] = [
         time: '20:00',
         location: 'Estadio Nacional',
         status: ConcertStatus.SCHEDULED,
+        featured: true,
     },
     {
         id: '2',
@@ -26,6 +27,7 @@ export const concertsLists: ConcertModel[] = [
         time: '21:30',
         location: 'Parque Bicentenario',
         status: ConcertStatus.LIVE,
+        featured: true,
     },
     {
         id: '4',

@@ -1,0 +1,64 @@
+@import 'tailwindcss';
+@import '../../theme.css';
+
+/*
+ * FeaturedBanner — hero destacado, mismo lenguaje visual que el "boleto" de
+ * ConcertCard (ver ConcertCard.css) pero a mayor escala y sin la placa de
+ * fecha lateral, porque acá la fecha va en la línea de metadatos.
+ */
+
+.featured-banner {
+    @apply relative flex overflow-hidden rounded-[24px] border border-border p-7;
+    background: linear-gradient(155deg, var(--color-surface-from), var(--color-surface-to));
+    box-shadow: 0 25px 60px -30px rgba(0, 0, 0, 0.7);
+}
+
+.featured-banner::after {
+    content: '';
+    @apply pointer-events-none absolute -top-20 -right-20 h-56 w-56 opacity-40 blur-[20px];
+    background: radial-gradient(circle, var(--color-accent), transparent 70%);
+}
+
+.featured-banner__body {
+    @apply relative flex min-w-0 flex-col items-start gap-2;
+}
+
+.featured-banner__eyebrow {
+    @apply text-xs font-bold tracking-[2px] text-accent uppercase;
+}
+
+.featured-banner__title {
+    @apply m-0 text-[28px] leading-tight font-extrabold tracking-tight text-foreground-strong;
+}
+
+.featured-banner__band {
+    @apply m-0 bg-gradient-to-r from-accent to-accent-2 bg-clip-text text-sm font-bold tracking-[0.6px] text-transparent;
+}
+
+.featured-banner--generic .featured-banner__band {
+    @apply bg-none text-foreground opacity-80;
+    -webkit-text-fill-color: initial;
+}
+
+.featured-banner__meta {
+    @apply mt-1 flex flex-wrap gap-x-4 gap-y-1.5 text-[13.5px] text-foreground;
+}
+
+.featured-banner__date,
+.featured-banner__location {
+    @apply flex items-center gap-1.5;
+}
+
+.featured-banner--generic {
+    @apply opacity-80;
+}
+
+@media (max-width: 480px) {
+    .featured-banner {
+        @apply p-5;
+    }
+
+    .featured-banner__title {
+        @apply text-2xl;
+    }
+}

@@ -1,26 +1,63 @@
 import './style.css';
 
+import { type ConcertModel } from '@/models';
 import { concertsLists } from './mocks/concerts.mocks';
 import { createConcertCardElement } from './components/ConcertCard';
+import { createFeaturedBannerElement } from './components/FeaturedBanner';
+import { createErrorFallbackElement } from './components/ErrorFallback';
+
+const CATALOG_EMPTY_MESSAGE = 'No hay conciertos programados por el momento. ¡Vuelve pronto!';
 
 const appContainer = document.getElementById('app');
 
 if (appContainer) {
+    try {
+        renderApp(appContainer);
+    } catch (error) {
+        // Red de seguridad: cualquier error inesperado durante el render
+        // (dato corrupto, un componente que lanza, etc.) reemplaza toda la
+        // app por un fallback genérico en vez de dejarla a medio renderizar.
+        console.error('[NeonPulse] Error inesperado al renderizar la app:', error);
+        appContainer.replaceChildren(createErrorFallbackElement());
+    }
+}
+
+function renderApp(appContainer: HTMLElement): void {
     /*
-    Componente átomo: ConcertCard
-    Componente molecula: ConcertGrid
+    Componente átomo: ConcertCard, StatusBadge
+    Componente molécula: FeaturedBanner
     Componente organismo: ConcertCatalog
     Componente sistema: App
      */
     appContainer.innerHTML = `
-        <h1>NeonPulse</H1>
-        <p>Cartelera Oficial de Conciertos y Eventos en Vivo</p>
+        <section class="featured-banner-section" aria-labelledby="featured-banner-heading">
+            <h2 id="featured-banner-heading" class="section-heading">Destacados</h2>
+            <div id="featured-banner"></div>
+        </section>
 
-        <main id="catalog-container"></main>
+        <section class="catalog-section" aria-labelledby="catalog-heading">
+            <h2 id="catalog-heading" class="section-heading">Revisa el catálogo de conciertos</h2>
+            <div id="catalog-container"></div>
+        </section>
         `;
 
+    const featuredContainer = appContainer.querySelector<HTMLElement>('#featured-banner')!;
+    featuredContainer.appendChild(createFeaturedBannerElement(concertsLists));
+
     const catalogContainer = appContainer.querySelector<HTMLElement>('#catalog-container')!;
-    concertsLists
+    renderCatalog(catalogContainer, concertsLists);
+}
+
+function renderCatalog(container: HTMLElement, concerts: ConcertModel[]): void {
+    if (concerts.length === 0) {
+        const empty = document.createElement('p');
+        empty.className = 'catalog-empty';
+        empty.textContent = CATALOG_EMPTY_MESSAGE;
+        container.appendChild(empty);
+        return;
+    }
+
+    concerts
         .toSorted((a, b) => a.date.getTime() - b.date.getTime())
-        .forEach((concert) => catalogContainer.appendChild(createConcertCardElement(concert)));
+        .forEach((concert) => container.appendChild(createConcertCardElement(concert)));
 }
