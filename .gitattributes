@@ -1,0 +1,4 @@
+# Normaliza los finales de línea a LF en el repo, sin importar core.autocrlf
+# de cada máquina — evita que Windows (autocrlf=true) reescriba todo a CRLF
+# en cada checkout y choque con el endOfLine "lf" por defecto de Prettier.
+* text=auto eol=lf
