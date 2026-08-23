@@ -1,12 +1,11 @@
 import './style.css';
 
 import { concertsLists } from './mocks/concerts.mocks';
-import { createConcertCardElement } from "./components/ConcertCard";
+import { createConcertCardElement } from './components/ConcertCard';
 
 const appContainer = document.getElementById('app');
 
-
-if(appContainer){
+if (appContainer) {
     /*
     Componente átomo: ConcertCard
     Componente molecula: ConcertGrid

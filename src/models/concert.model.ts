@@ -1,6 +1,6 @@
 // definir enum con valores
 
-import {ConcertStatus} from "./concertStatus.ts";
+import { ConcertStatus } from './concertStatus.ts';
 
 export interface ConcertModel {
     id: string;

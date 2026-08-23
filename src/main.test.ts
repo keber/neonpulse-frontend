@@ -26,9 +26,9 @@ describe('main', () => {
 
         await import('./main');
 
-        const renderedTitles = Array.from(
-            document.querySelectorAll('.concert-card__title'),
-        ).map((el) => el.textContent);
+        const renderedTitles = Array.from(document.querySelectorAll('.concert-card__title')).map(
+            (el) => el.textContent,
+        );
         const expectedTitles = concertsLists
             .toSorted((a, b) => a.date.getTime() - b.date.getTime())
             .map((concert) => concert.title);

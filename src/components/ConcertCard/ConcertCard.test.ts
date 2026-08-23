@@ -32,9 +32,7 @@ describe('createConcertCardElement', () => {
         expect(card.querySelector('.concert-card__title')?.textContent).toBe(
             'Latinomerican Tour 2026',
         );
-        expect(card.querySelector('.concert-card__band')?.textContent).toBe(
-            'The Rolling Stones',
-        );
+        expect(card.querySelector('.concert-card__band')?.textContent).toBe('The Rolling Stones');
         expect(card.querySelector('.concert-card__location')?.textContent?.trim()).toBe(
             'Estadio Nacional',
         );
@@ -55,26 +53,20 @@ describe('createConcertCardElement', () => {
         // Regresión: new Date('2026-08-22') es medianoche UTC; usar
         // getDate()/getMonth() (hora local) podía mostrar el 21 de agosto
         // en husos horarios detrás de UTC.
-        const card = createConcertCardElement(
-            buildConcert({ date: new Date('2026-08-22') }),
-        );
+        const card = createConcertCardElement(buildConcert({ date: new Date('2026-08-22') }));
 
         expect(card.querySelector('.concert-card__day')?.textContent).toBe('22');
         expect(card.querySelector('.concert-card__month')?.textContent).toBe('AGO');
     });
 
     it('no muestra el año cuando el concierto es del año actual', () => {
-        const card = createConcertCardElement(
-            buildConcert({ date: new Date('2026-06-15') }),
-        );
+        const card = createConcertCardElement(buildConcert({ date: new Date('2026-06-15') }));
 
         expect(card.querySelector('.concert-card__year')?.textContent).toBe('');
     });
 
     it('muestra el año cuando el concierto es de un año distinto al actual', () => {
-        const card = createConcertCardElement(
-            buildConcert({ date: new Date('2025-11-02') }),
-        );
+        const card = createConcertCardElement(buildConcert({ date: new Date('2025-11-02') }));
 
         expect(card.querySelector('.concert-card__year')?.textContent).toBe('2025');
     });

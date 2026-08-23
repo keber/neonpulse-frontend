@@ -17,7 +17,9 @@ describe('concertsLists', () => {
         const validStatuses = Object.values(ConcertStatus);
 
         for (const concert of concertsLists) {
-            expect(concert.date instanceof Date && !Number.isNaN(concert.date.getTime())).toBe(true);
+            expect(concert.date instanceof Date && !Number.isNaN(concert.date.getTime())).toBe(
+                true,
+            );
             expect(validStatuses).toContain(concert.status);
         }
     });

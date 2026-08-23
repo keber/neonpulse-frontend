@@ -10,8 +10,18 @@ import { icon } from '../icons';
 import { createStatusBadgeElement, getStatusModifier } from './StatusBadge';
 
 const MONTHS_ES = [
-    'ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN',
-    'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC',
+    'ENE',
+    'FEB',
+    'MAR',
+    'ABR',
+    'MAY',
+    'JUN',
+    'JUL',
+    'AGO',
+    'SEP',
+    'OCT',
+    'NOV',
+    'DIC',
 ];
 
 const TEMPLATE = document.createElement('template');
@@ -48,7 +58,8 @@ export function createConcertCardElement(concert: ConcertModel): HTMLElement {
     card.querySelector('.concert-card__day')!.textContent = String(day);
     card.querySelector('.concert-card__month')!.textContent = month;
     // Se muestra el año solo para los conciertos que no son del año actual.
-    card.querySelector('.concert-card__year')!.textContent = year !== currentYear ? String(year) : '';
+    card.querySelector('.concert-card__year')!.textContent =
+        year !== currentYear ? String(year) : '';
 
     card.querySelector('.concert-card__body')!.prepend(createStatusBadgeElement(concert.status));
     card.querySelector('.concert-card__title')!.textContent = concert.title;
