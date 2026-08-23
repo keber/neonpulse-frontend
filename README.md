@@ -85,3 +85,11 @@ La suite cubre: renderizado de la tarjeta (texto, escapado, íconos condicionale
 
 - **Commits semánticos** ([Conventional Commits](https://www.conventionalcommits.org/)): `feat: …`, `fix: …`, `docs: …`, `refactor: …`, `test: …`, `chore: …`, `style: …`, `build: …`.
 - Formato de código delegado a Prettier (comillas simples, punto y coma, indentación de 4 espacios, coma final) — no se discute a mano, se corre `npm run format`.
+
+## Changelog
+
+Los cambios notables del proyecto se registran en [`CHANGELOG.md`](./CHANGELOG.md), siguiendo el formato de [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
+
+## Licencia
+
+[MIT](./LICENSE) © Keber Flores
