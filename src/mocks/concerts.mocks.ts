@@ -1,4 +1,4 @@
-import {type ConcertModel, ConcertStatus} from '@/models';
+import { type ConcertModel, ConcertStatus } from '@/models';
 
 export const concertsLists: ConcertModel[] = [
     {
@@ -8,7 +8,7 @@ export const concertsLists: ConcertModel[] = [
         date: new Date('2026-06-15'),
         time: '20:00',
         location: 'Estadio Nacional',
-        status: ConcertStatus.SCHEDULED
+        status: ConcertStatus.SCHEDULED,
     },
     {
         id: '2',
@@ -16,7 +16,7 @@ export const concertsLists: ConcertModel[] = [
         band: 'Deep Purple',
         date: new Date('2026-09-10'),
         location: 'Movistar Arena',
-        status: ConcertStatus.SCHEDULED
+        status: ConcertStatus.SCHEDULED,
     },
     {
         id: '3',
@@ -25,7 +25,7 @@ export const concertsLists: ConcertModel[] = [
         date: new Date('2026-08-22'),
         time: '21:30',
         location: 'Parque Bicentenario',
-        status: ConcertStatus.LIVE
+        status: ConcertStatus.LIVE,
     },
     {
         id: '4',
@@ -34,7 +34,7 @@ export const concertsLists: ConcertModel[] = [
         date: new Date('2025-11-02'),
         time: '19:00',
         location: 'Anfiteatro Vespucio',
-        status: ConcertStatus.FINISHED
+        status: ConcertStatus.FINISHED,
     },
     {
         id: '5',
@@ -42,7 +42,7 @@ export const concertsLists: ConcertModel[] = [
         band: 'Daft Punk',
         date: new Date('2026-12-05'),
         location: 'Espacio Riesco',
-        status: ConcertStatus.CANCELED
+        status: ConcertStatus.CANCELED,
     },
     {
         id: '6',
@@ -51,6 +51,6 @@ export const concertsLists: ConcertModel[] = [
         date: new Date('2026-10-18'),
         time: '18:45',
         location: "Parque O'Higgins",
-        status: ConcertStatus.SCHEDULED
-    }
+        status: ConcertStatus.SCHEDULED,
+    },
 ];

@@ -11,6 +11,10 @@ node_modules
 dist
 dist-ssr
 *.local
+*.tsbuildinfo
+
+# Test coverage (vitest run --coverage)
+coverage
 
 # Editor directories and files
 .vscode/*
@@ -22,6 +26,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
 
 .env
 .env.local
