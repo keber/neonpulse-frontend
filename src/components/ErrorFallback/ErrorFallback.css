@@ -1,0 +1,15 @@
+@import 'tailwindcss';
+@import '../../theme.css';
+
+.error-fallback {
+    @apply mx-auto flex max-w-[480px] flex-col items-center gap-3 rounded-[20px] border border-border p-10 text-center;
+    background: linear-gradient(155deg, var(--color-surface-from), var(--color-surface-to));
+}
+
+.error-fallback__title {
+    @apply m-0 text-2xl font-extrabold text-foreground-strong;
+}
+
+.error-fallback__message {
+    @apply m-0 text-sm text-foreground opacity-80;
+}
