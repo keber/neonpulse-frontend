@@ -6,23 +6,9 @@
 // navegador nunca interpreta como HTML. Así el escapado ya no depende de
 // que alguien se acuerde de llamarlo a mano (antes: escapeHtml()).
 import { type ConcertModel } from '@/models';
+import { getConcertDateParts } from '@/lib/concertDate';
 import { icon } from '../icons';
 import { createStatusBadgeElement, getStatusModifier } from './StatusBadge';
-
-const MONTHS_ES = [
-    'ENE',
-    'FEB',
-    'MAR',
-    'ABR',
-    'MAY',
-    'JUN',
-    'JUL',
-    'AGO',
-    'SEP',
-    'OCT',
-    'NOV',
-    'DIC',
-];
 
 const TEMPLATE = document.createElement('template');
 TEMPLATE.innerHTML = `
@@ -47,19 +33,12 @@ export function createConcertCardElement(concert: ConcertModel): HTMLElement {
     const card = TEMPLATE.content.firstElementChild!.cloneNode(true) as HTMLElement;
     card.classList.add(`concert-card--${getStatusModifier(concert.status)}`);
 
-    // Se usan los métodos UTC porque las fechas se construyen a partir de
-    // strings tipo "YYYY-MM-DD", que Date interpreta como medianoche UTC;
-    // leerlas en hora local podía mostrar el día anterior según el huso horario.
-    const day = concert.date.getUTCDate();
-    const month = MONTHS_ES[concert.date.getUTCMonth()];
-    const year = concert.date.getUTCFullYear();
-    const currentYear = new Date().getUTCFullYear();
+    const { day, month, year, isCurrentYear } = getConcertDateParts(concert.date);
 
     card.querySelector('.concert-card__day')!.textContent = String(day);
     card.querySelector('.concert-card__month')!.textContent = month;
     // Se muestra el año solo para los conciertos que no son del año actual.
-    card.querySelector('.concert-card__year')!.textContent =
-        year !== currentYear ? String(year) : '';
+    card.querySelector('.concert-card__year')!.textContent = isCurrentYear ? '' : String(year);
 
     card.querySelector('.concert-card__body')!.prepend(createStatusBadgeElement(concert.status));
     card.querySelector('.concert-card__title')!.textContent = concert.title;
