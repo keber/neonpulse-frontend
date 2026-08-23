@@ -3,20 +3,30 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 describe('main', () => {
     beforeEach(() => {
         vi.resetModules();
-        document.body.innerHTML = '<div id="app"></div><div id="footer"></div>';
+        document.body.innerHTML = '<main id="app"></main>';
     });
 
     afterEach(() => {
+        vi.restoreAllMocks();
+        // vi.resetModules() solo limpia la caché de módulos, no las fábricas
+        // registradas con vi.doMock — sin este unmock, el mock de un test se
+        // filtraba al siguiente (concertsLists seguía "vacío" en el test del
+        // fallback de error, que dependía de tener conciertos reales).
+        vi.doUnmock('./mocks/concerts.mocks');
+        vi.doUnmock('./components/ConcertCard');
         document.body.innerHTML = '';
     });
 
-    it('renderiza el título y una tarjeta por cada concierto del catálogo', async () => {
+    it('renderiza el destacado, los títulos de sección y una tarjeta por cada concierto del catálogo', async () => {
         const { concertsLists } = await import('./mocks/concerts.mocks');
         await import('./main');
 
         const app = document.getElementById('app');
 
-        expect(app?.querySelector('h1')?.textContent).toBe('NeonPulse');
+        expect(app?.querySelector('#featured-banner .featured-banner')).not.toBeNull();
+        expect(
+            Array.from(app?.querySelectorAll('.section-heading') ?? []).map((el) => el.textContent),
+        ).toEqual(['Destacados', 'Revisa el catálogo de conciertos']);
         expect(app?.querySelectorAll('.concert-card').length).toBe(concertsLists.length);
     });
 
@@ -39,8 +49,44 @@ describe('main', () => {
     });
 
     it('no lanza error si la página no tiene un contenedor #app', async () => {
-        document.body.innerHTML = '<div id="footer"></div>';
+        document.body.innerHTML = '';
 
         await expect(import('./main')).resolves.not.toBeUndefined();
+    });
+
+    it('muestra el mensaje de catálogo vacío cuando no hay conciertos', async () => {
+        vi.spyOn(console, 'error').mockImplementation(() => {});
+        vi.doMock('./mocks/concerts.mocks', () => ({ concertsLists: [] }));
+
+        await import('./main');
+
+        const app = document.getElementById('app');
+        expect(app?.querySelector('.catalog-empty')?.textContent).toBe(
+            'No hay conciertos programados por el momento. ¡Vuelve pronto!',
+        );
+        expect(app?.querySelectorAll('.concert-card').length).toBe(0);
+        // Sin conciertos tampoco hay nada para destacar: el banner cae a su
+        // variante genérica y avisa por consola (comportamiento de FeaturedBanner).
+        expect(app?.querySelector('.featured-banner--generic')).not.toBeNull();
+        expect(console.error).toHaveBeenCalled();
+    });
+
+    it('muestra el fallback global de error si el render falla inesperadamente', async () => {
+        const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+        vi.doMock('./components/ConcertCard', () => ({
+            createConcertCardElement: () => {
+                throw new Error('boom');
+            },
+        }));
+
+        await import('./main');
+
+        const app = document.getElementById('app');
+        expect(app?.querySelector('.error-fallback')).not.toBeNull();
+        expect(app?.querySelector('.concert-card')).toBeNull();
+        expect(consoleError).toHaveBeenCalledWith(
+            '[NeonPulse] Error inesperado al renderizar la app:',
+            expect.any(Error),
+        );
     });
 });
