@@ -1,3 +1,6 @@
+// Fixture de datos para tests (main.test.ts y concerts.mocks.test.ts).
+// La app en runtime ya no lee de acá: main.ts carga el catálogo con
+// fetchConcerts() (src/lib/concertsApi.ts) desde public/data/concerts.json.
 import { type ConcertModel, ConcertStatus } from '@/models';
 
 export const concertsLists: ConcertModel[] = [

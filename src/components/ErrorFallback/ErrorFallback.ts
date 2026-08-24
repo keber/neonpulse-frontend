@@ -1,5 +1,6 @@
 // Fallback UI global: se monta cuando algo inesperado rompe el render de la
-// app (dato corrupto, un componente que lanza, etc.). No reemplaza los
+// app (fetch de conciertos que falla o responde no-ok, dato con forma
+// inválida, un componente que lanza, etc.). No reemplaza los
 // estados vacíos esperados (catálogo sin conciertos, sin destacados), que
 // tienen su propio mensaje — esto es la red de seguridad para lo que no se
 // puede prever.

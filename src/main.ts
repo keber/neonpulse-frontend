@@ -15,8 +15,9 @@ if (appContainer) {
         await renderApp(appContainer);
     } catch (error) {
         // Red de seguridad: cualquier error inesperado durante el render
-        // (dato corrupto, un componente que lanza, etc.) reemplaza toda la
-        // app por un fallback genérico en vez de dejarla a medio renderizar.
+        // (fetch que falla o responde no-ok, dato con forma inválida, un
+        // componente que lanza, etc.) reemplaza toda la app por un fallback
+        // genérico en vez de dejarla a medio renderizar.
         console.error('[NeonPulse] Error inesperado al renderizar la app:', error);
         appContainer.replaceChildren(createErrorFallbackElement());
     }
@@ -29,7 +30,9 @@ async function renderApp(appContainer: HTMLElement): Promise<void> {
     Componente organismo: ConcertCatalog
     Componente sistema: App
      */
-    // Carga dinámica de los datos de conciertos.
+    // Trae el catálogo con fetchConcerts() (src/lib/concertsApi.ts): lanza
+    // si la respuesta no es ok o algún registro no cumple el contrato
+    // esperado, lo que el try/catch de arriba resuelve con el fallback.
     const concertsLists = await fetchConcerts();
 
     appContainer.innerHTML = `

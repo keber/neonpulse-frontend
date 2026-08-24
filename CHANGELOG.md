@@ -11,6 +11,11 @@ con su fecha y se abre una `[Unreleased]` nueva encima.
 
 ### Added
 
+- `fetchConcerts()` (`src/lib/concertsApi.ts`): carga el catálogo con `fetch` desde
+  `public/data/concerts.json`, simulando lo que vendría de un backend real.
+- Contrato de datos validado en runtime (`isConcertDto`, _type predicate_ + `.every()`
+  fail-fast) antes de convertir cada `date` de string a `Date` — reemplaza la confianza
+  ciega en un `as` de compilación sobre `response.json()`.
 - Modelo de dominio (`ConcertModel`, `ConcertStatus`) y datos de ejemplo (`concerts.mocks.ts`).
 - Componente `ConcertCard`: tarjeta de concierto estilo "ticket", con placa de fecha, badge
   de estado (`StatusBadge`) y soporte para hora y ubicación opcionales.
@@ -25,6 +30,13 @@ con su fecha y se abre una `[Unreleased]` nueva encima.
 
 ### Changed
 
+- `main.ts` carga el catálogo con `fetchConcerts()` en vez de un import estático de
+  mocks; `renderApp` pasa a ser `async` y el `try/catch` de nivel superior (top-level
+  `await`) ahora también cubre el fetch: si falla, responde no-ok, o el dato no cumple
+  el contrato, se muestra `ErrorFallback`.
+- `src/mocks/concerts.mocks.ts` deja de ser la fuente de datos de la app y queda como
+  fixture exclusivo de la suite de tests (`main.test.ts` mockea `global.fetch` en vez
+  del módulo de mocks).
 - El catálogo se ordena por fecha ascendente sin mutar el array original
   (`Array.prototype.toSorted`).
 - El renderizado de `ConcertCard` pasó de construir HTML como string a clonar un
@@ -35,6 +47,11 @@ con su fecha y se abre una `[Unreleased]` nueva encima.
 
 ### Fixed
 
+- `concerts.mocks.ts` había quedado sin ningún export activo (el array comentado por
+  completo), lo que rompía el `import` estático de `main.ts` con un `SyntaxError` de
+  módulo no recuperable por ningún `try/catch` (el linking de ES modules falla antes
+  de ejecutar el cuerpo de cualquier módulo del grafo). Se resolvió reemplazando esa
+  fuente por `fetchConcerts()` en vez de restaurar el import estático a los mocks.
 - Las fechas del badge de la tarjeta se leen con los métodos `getUTC*()` de `Date` en vez
   de los locales: `new Date('YYYY-MM-DD')` se interpreta como medianoche UTC, y leerla en
   hora local podía mostrar el día anterior según el huso horario del navegador.

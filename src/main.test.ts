@@ -114,7 +114,10 @@ describe('main', () => {
 
     it('muestra el fallback de error cuando el fetch de conciertos falla', async () => {
         vi.spyOn(console, 'error').mockImplementation(() => {});
-        vi.stubGlobal('fetch', vi.fn().mockResolvedValue(jsonResponse(null, { ok: false, status: 500 })));
+        vi.stubGlobal(
+            'fetch',
+            vi.fn().mockResolvedValue(jsonResponse(null, { ok: false, status: 500 })),
+        );
 
         await import('./main');
 
