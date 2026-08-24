@@ -1,4 +1,17 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { type ConcertModel } from '@/models';
+
+function jsonResponse(body: unknown, init: { ok?: boolean; status?: number } = {}): Response {
+    return {
+        ok: init.ok ?? true,
+        status: init.status ?? 200,
+        json: async () => body,
+    } as Response;
+}
+
+function toRawConcert(concert: ConcertModel) {
+    return { ...concert, date: concert.date.toISOString().slice(0, 10) };
+}
 
 describe('main', () => {
     beforeEach(() => {
@@ -8,17 +21,17 @@ describe('main', () => {
 
     afterEach(() => {
         vi.restoreAllMocks();
-        // vi.resetModules() solo limpia la caché de módulos, no las fábricas
-        // registradas con vi.doMock — sin este unmock, el mock de un test se
-        // filtraba al siguiente (concertsLists seguía "vacío" en el test del
-        // fallback de error, que dependía de tener conciertos reales).
-        vi.doUnmock('./mocks/concerts.mocks');
+        vi.unstubAllGlobals(); // limpia el stub de fetch entre tests
         vi.doUnmock('./components/ConcertCard');
         document.body.innerHTML = '';
     });
 
     it('renderiza el destacado, los títulos de sección y una tarjeta por cada concierto del catálogo', async () => {
         const { concertsLists } = await import('./mocks/concerts.mocks');
+        vi.stubGlobal(
+            'fetch',
+            vi.fn().mockResolvedValue(jsonResponse(concertsLists.map(toRawConcert))),
+        );
         await import('./main');
 
         const app = document.getElementById('app');
@@ -32,6 +45,10 @@ describe('main', () => {
 
     it('ordena las tarjetas por fecha ascendente sin mutar el array original de conciertos', async () => {
         const { concertsLists } = await import('./mocks/concerts.mocks');
+        vi.stubGlobal(
+            'fetch',
+            vi.fn().mockResolvedValue(jsonResponse(concertsLists.map(toRawConcert))),
+        );
         const originalOrder = concertsLists.map((concert) => concert.id);
 
         await import('./main');
@@ -56,7 +73,7 @@ describe('main', () => {
 
     it('muestra el mensaje de catálogo vacío cuando no hay conciertos', async () => {
         vi.spyOn(console, 'error').mockImplementation(() => {});
-        vi.doMock('./mocks/concerts.mocks', () => ({ concertsLists: [] }));
+        vi.stubGlobal('fetch', vi.fn().mockResolvedValue(jsonResponse([])));
 
         await import('./main');
 
@@ -73,6 +90,11 @@ describe('main', () => {
 
     it('muestra el fallback global de error si el render falla inesperadamente', async () => {
         const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+        const { concertsLists } = await import('./mocks/concerts.mocks');
+        vi.stubGlobal(
+            'fetch',
+            vi.fn().mockResolvedValue(jsonResponse(concertsLists.map(toRawConcert))),
+        );
         vi.doMock('./components/ConcertCard', () => ({
             createConcertCardElement: () => {
                 throw new Error('boom');
@@ -88,5 +110,15 @@ describe('main', () => {
             '[NeonPulse] Error inesperado al renderizar la app:',
             expect.any(Error),
         );
+    });
+
+    it('muestra el fallback de error cuando el fetch de conciertos falla', async () => {
+        vi.spyOn(console, 'error').mockImplementation(() => {});
+        vi.stubGlobal('fetch', vi.fn().mockResolvedValue(jsonResponse(null, { ok: false, status: 500 })));
+
+        await import('./main');
+
+        const app = document.getElementById('app');
+        expect(app?.querySelector('.error-fallback')).not.toBeNull();
     });
 });
