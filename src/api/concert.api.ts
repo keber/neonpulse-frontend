@@ -2,9 +2,10 @@ import { type ConcertModel, ConcertStatus } from '@/models';
 
 const CONCERTS_URL = '/data/concerts.json';
 
-// Igual que ConcertModel, pero `date` todavía es el string crudo del JSON
-// (no lo pasamos por `new Date()` hasta después de validarlo).
-type ConcertDto = Omit<ConcertModel, 'date'> & { date: string };
+// Forma cruda tal como llega del JSON: igual que ConcertModel, pero `date`
+// todavía es un string sin parsear. La transformación a Date es una regla
+// de negocio y vive en la capa de servicio, no acá.
+export type ConcertDto = Omit<ConcertModel, 'date'> & { date: string };
 
 const VALID_STATUSES: readonly string[] = Object.values(ConcertStatus);
 const DATE_ONLY_RE = /^\d{4}-\d{2}-\d{2}$/;
@@ -28,7 +29,10 @@ function isConcertDto(value: unknown): value is ConcertDto {
     );
 }
 
-export async function fetchConcerts(): Promise<ConcertModel[]> {
+// Capa de transporte: trae el payload y garantiza en runtime que cumple el
+// contrato esperado del endpoint. No sabe nada de ConcertModel ni hace
+// transformaciones de negocio — eso es responsabilidad de concert.service.ts.
+export async function fetchConcertsPayload(): Promise<ConcertDto[]> {
     const response = await fetch(CONCERTS_URL);
 
     if (!response.ok) {
@@ -45,9 +49,5 @@ export async function fetchConcerts(): Promise<ConcertModel[]> {
         throw new Error('El catálogo de conciertos tiene entradas con forma inválida');
     }
 
-    // A esta altura TS ya angostó `payload` a ConcertDto[] — sin ningún `as`.
-    return payload.map((concert) => ({
-        ...concert,
-        date: new Date(concert.date),
-    }));
+    return payload;
 }

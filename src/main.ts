@@ -1,7 +1,7 @@
 import './style.css';
 
 import { type ConcertModel } from '@/models';
-import { fetchConcerts } from '@/lib/concertsApi';
+import { getConcerts } from '@/services/concert.service';
 import { createConcertCardElement } from './components/ConcertCard';
 import { createFeaturedBannerElement } from './components/FeaturedBanner';
 import { createErrorFallbackElement } from './components/ErrorFallback';
@@ -30,10 +30,11 @@ async function renderApp(appContainer: HTMLElement): Promise<void> {
     Componente organismo: ConcertCatalog
     Componente sistema: App
      */
-    // Trae el catálogo con fetchConcerts() (src/lib/concertsApi.ts): lanza
-    // si la respuesta no es ok o algún registro no cumple el contrato
-    // esperado, lo que el try/catch de arriba resuelve con el fallback.
-    const concertsLists = await fetchConcerts();
+    // Trae el catálogo con getConcerts() (src/services/concert.service.ts):
+    // lanza si la respuesta no es ok o algún registro no cumple el
+    // contrato esperado, lo que el try/catch de arriba resuelve con el
+    // fallback.
+    const concertsLists = await getConcerts();
 
     appContainer.innerHTML = `
         <section class="featured-banner-section" aria-labelledby="featured-banner-heading">
