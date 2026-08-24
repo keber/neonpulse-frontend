@@ -11,10 +11,10 @@ async function main(): Promise<void> {
     try {
         await renderCatalogView(appContainer);
     } catch (error) {
-        // Red de seguridad: cualquier error inesperado durante el render
-        // (fetch que falla o responde no-ok, dato con forma inválida, un
-        // componente que lanza, etc.) reemplaza toda la app por un fallback
-        // genérico en vez de dejarla a medio renderizar.
+        // Safety net: any unexpected error during render (fetch failing or
+        // responding non-ok, malformed data, a component that throws, etc.)
+        // replaces the whole app with a generic fallback instead of leaving
+        // it half-rendered.
         console.error('[NeonPulse] Error inesperado al renderizar la app:', error);
         appContainer.replaceChildren(createErrorFallbackElement());
     }

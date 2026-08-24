@@ -1,5 +1,3 @@
-// definir enum con valores
-
 import { ConcertStatus } from './concertStatus.ts';
 
 export interface ConcertModel {
@@ -11,9 +9,9 @@ export interface ConcertModel {
     location: string;
     status: ConcertStatus;
     /**
-     * Decisión editorial explícita: true si el equipo de contenido eligió
-     * mostrar este concierto en el banner de destacados. No se infiere del
-     * `status` (p. ej. LIVE) — esa regla de negocio queda para más adelante.
+     * Explicit editorial decision: true if the content team chose to
+     * feature this concert in the banner. Not inferred from `status`
+     * (e.g. LIVE) — that business rule is left for later.
      */
     featured?: boolean;
 }

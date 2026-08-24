@@ -6,10 +6,10 @@ import { createFeaturedBannerElement } from '@/components/FeaturedBanner';
 const CATALOG_EMPTY_MESSAGE = 'No hay conciertos programados por el momento. ¡Vuelve pronto!';
 
 /*
-Componente átomo: ConcertCard, StatusBadge
-Componente molécula: FeaturedBanner
-Componente organismo: ConcertCatalog
-Componente vista: CatalogView
+Atom component: ConcertCard, StatusBadge
+Molecule component: FeaturedBanner
+Organism component: ConcertCatalog
+View component: CatalogView
  */
 
 interface CatalogSections {
@@ -17,9 +17,9 @@ interface CatalogSections {
     catalogContainer: HTMLElement;
 }
 
-// Arma el esqueleto estático de la vista (markup fijo, escrito por
-// nosotros — nunca datos) y devuelve referencias a los puntos donde se
-// insertan las secciones dinámicas. Es la única función que toca innerHTML.
+// Builds the view's static skeleton (fixed markup we wrote ourselves —
+// never data) and returns references to where the dynamic sections get
+// inserted. This is the only function that touches innerHTML.
 function renderShell(container: HTMLElement): CatalogSections {
     container.innerHTML = `
         <section class="featured-banner-section" aria-labelledby="featured-banner-heading">
@@ -57,9 +57,9 @@ function renderCatalog(container: HTMLElement, concerts: ConcertModel[]): void {
         .forEach((concert) => container.appendChild(createConcertCardElement(concert)));
 }
 
-// Trae el catálogo con getConcerts() (src/services/concert.service.ts):
-// lanza si el fetch falla, la respuesta no es ok, o algún registro no
-// cumple el contrato — quien llame a esta vista decide qué hacer con eso.
+// Loads the catalog with getConcerts() (src/services/concert.service.ts):
+// throws if the fetch fails, the response isn't ok, or any record doesn't
+// match the contract — whoever calls this view decides what to do about it.
 export async function renderCatalogView(container: HTMLElement): Promise<void> {
     const concerts = await getConcerts();
     const { featuredContainer, catalogContainer } = renderShell(container);

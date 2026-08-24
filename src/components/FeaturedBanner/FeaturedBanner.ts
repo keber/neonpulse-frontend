@@ -1,7 +1,6 @@
-// Componente que decide y renderiza el concierto destacado del banner
-// principal. Sigue el mismo enfoque que ConcertCard: <template> fijo
-// clonado por llamada, datos volcados con textContent/append (nunca
-// innerHTML con datos).
+// Component that decides and renders the main banner's featured concert.
+// Follows the same approach as ConcertCard: a fixed <template> cloned per
+// call, data poured in with textContent/append (never innerHTML with data).
 import { type ConcertModel, ConcertStatus } from '@/models';
 import { getConcertDateParts } from '@/lib/concertDate';
 import { icon } from '../icons';
@@ -13,17 +12,17 @@ export interface FeaturedSelection {
 }
 
 /**
- * Decide qué concierto mostrar en el banner de destacados:
+ * Decides which concert to show in the featured banner:
  *
- * 1. Preferencia: conciertos marcados `featured: true` por el equipo de
- *    contenido (decisión editorial, no derivada del `status`). Si hay más
- *    de uno, se muestra el más próximo por fecha — todavía no hay carrusel.
- * 2. Si no hay ningún destacado editorial, fallback: el concierto no
- *    cancelado más cercano a hoy. Se avisa por consola porque implica que
- *    el catálogo quedó sin destacados y alguien debería revisarlo.
- * 3. Si tampoco hay ningún concierto disponible (todos cancelados o
- *    catálogo vacío), no hay nada que destacar — se avisa por consola y el
- *    render resuelve un banner genérico.
+ * 1. Preference: concerts marked `featured: true` by the content team
+ *    (an editorial decision, not derived from `status`). If there's more
+ *    than one, the nearest by date is shown — no carousel yet.
+ * 2. If there's no editorial pick, fallback: the nearest non-canceled
+ *    concert to today. Logged to the console because it means the catalog
+ *    was left without a featured pick and someone should look into it.
+ * 3. If there's no concert available at all (everything canceled or an
+ *    empty catalog), there's nothing to feature — logged to the console,
+ *    and the render resolves to a generic banner.
  */
 export function selectFeaturedConcert(concerts: ConcertModel[]): FeaturedSelection {
     const featured = concerts

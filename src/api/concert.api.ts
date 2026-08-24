@@ -2,9 +2,9 @@ import { type ConcertModel, ConcertStatus } from '@/models';
 
 const CONCERTS_URL = '/data/concerts.json';
 
-// Forma cruda tal como llega del JSON: igual que ConcertModel, pero `date`
-// todavía es un string sin parsear. La transformación a Date es una regla
-// de negocio y vive en la capa de servicio, no acá.
+// Raw shape as it arrives from the JSON: same as ConcertModel, but `date`
+// is still an unparsed string. The transformation to Date is a business
+// rule and lives in the service layer, not here.
 export type ConcertDto = Omit<ConcertModel, 'date'> & { date: string };
 
 const VALID_STATUSES: readonly string[] = Object.values(ConcertStatus);
@@ -29,9 +29,10 @@ function isConcertDto(value: unknown): value is ConcertDto {
     );
 }
 
-// Capa de transporte: trae el payload y garantiza en runtime que cumple el
-// contrato esperado del endpoint. No sabe nada de ConcertModel ni hace
-// transformaciones de negocio — eso es responsabilidad de concert.service.ts.
+// Transport layer: fetches the payload and guarantees at runtime that it
+// matches the endpoint's expected contract. Knows nothing about
+// ConcertModel and does no business transformations — that's
+// concert.service.ts's responsibility.
 export async function fetchConcertsPayload(): Promise<ConcertDto[]> {
     const response = await fetch(CONCERTS_URL);
 

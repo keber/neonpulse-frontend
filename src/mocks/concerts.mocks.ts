@@ -1,6 +1,7 @@
-// Fixture de datos para tests (main.test.ts y concerts.mocks.test.ts).
-// La app en runtime ya no lee de acá: main.ts carga el catálogo con
-// getConcerts() (src/services/concert.service.ts) desde public/data/concerts.json.
+// Test fixture data (main.test.ts and concerts.mocks.test.ts). The app no
+// longer reads from here at runtime: main.ts loads the catalog with
+// getConcerts() (src/services/concert.service.ts) from
+// public/data/concerts.json.
 import { type ConcertModel, ConcertStatus } from '@/models';
 
 export const concertsLists: ConcertModel[] = [

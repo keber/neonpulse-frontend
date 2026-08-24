@@ -1,10 +1,10 @@
-// Componente que recibe un objeto de tipo Concert y devuelve un elemento
-// del DOM con la tarjeta del concierto, lista para insertar con
-// appendChild. Arma el esqueleto una sola vez como <template> (markup fijo,
-// escrito por nosotros — no datos) y en cada llamada solo clona ese
-// template y rellena las partes dinámicas con textContent/append, que el
-// navegador nunca interpreta como HTML. Así el escapado ya no depende de
-// que alguien se acuerde de llamarlo a mano (antes: escapeHtml()).
+// Component that takes a Concert object and returns a DOM element with
+// the concert card, ready to insert with appendChild. Builds the skeleton
+// once as a <template> (fixed markup we wrote ourselves — not data), and
+// each call just clones that template and fills in the dynamic parts with
+// textContent/append, which the browser never interprets as HTML. That
+// way escaping no longer depends on someone remembering to call it by
+// hand (previously: escapeHtml()).
 import { type ConcertModel } from '@/models';
 import { getConcertDateParts } from '@/lib/concertDate';
 import { icon } from '../icons';
@@ -37,7 +37,7 @@ export function createConcertCardElement(concert: ConcertModel): HTMLElement {
 
     card.querySelector('.concert-card__day')!.textContent = String(day);
     card.querySelector('.concert-card__month')!.textContent = month;
-    // Se muestra el año solo para los conciertos que no son del año actual.
+    // The year is only shown for concerts that aren't in the current year.
     card.querySelector('.concert-card__year')!.textContent = isCurrentYear ? '' : String(year);
 
     card.querySelector('.concert-card__body')!.prepend(createStatusBadgeElement(concert.status));

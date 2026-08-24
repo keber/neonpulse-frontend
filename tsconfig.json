@@ -14,7 +14,7 @@
         "moduleDetection": "force",
         "noEmit": true,
 
-        /* Alias de imports: @/models en vez de ../../models */
+        /* Import alias: @/models instead of ../../models */
         "paths": {
             "@/*": ["./src/*"]
         },

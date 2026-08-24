@@ -1,5 +1,5 @@
-// Formato acorde al estilo que ya tenía el código del proyecto (comillas
-// simples, punto y coma, indentación de 4 espacios, coma final).
+// Formatting matches the style the project's code already had (single
+// quotes, semicolons, 4-space indentation, trailing commas).
 export default {
     semi: true,
     singleQuote: true,

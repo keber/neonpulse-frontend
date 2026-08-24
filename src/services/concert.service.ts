@@ -1,9 +1,10 @@
 import { type ConcertModel } from '@/models';
 import { fetchConcertsPayload } from '@/api/concert.api';
 
-// Capa de negocio: pide el payload ya validado a la API y lo transforma a
-// la forma que consume el resto de la app (date: string → Date). No sabe
-// nada de fetch/HTTP — eso es responsabilidad de concert.api.ts.
+// Business layer: asks the API for the already-validated payload and
+// transforms it into the shape the rest of the app consumes
+// (date: string → Date). Knows nothing about fetch/HTTP — that's
+// concert.api.ts's responsibility.
 export async function getConcerts(): Promise<ConcertModel[]> {
     const payload = await fetchConcertsPayload();
 

@@ -1,9 +1,9 @@
 import { defineConfig, mergeConfig } from 'vitest/config';
 import viteConfig from './vite.config.ts';
 
-// Vitest no combina automáticamente vite.config.ts cuando existe un
-// vitest.config.ts separado — hay que fusionarlos explícitamente para que
-// los tests compartan el plugin de Tailwind (y el alias "@") con la app.
+// Vitest doesn't automatically merge vite.config.ts when a separate
+// vitest.config.ts exists — they have to be merged explicitly so tests
+// share the Tailwind plugin (and the "@" alias) with the app.
 export default mergeConfig(
     viteConfig,
     defineConfig({
