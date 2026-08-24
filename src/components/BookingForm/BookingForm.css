@@ -1,0 +1,127 @@
+@import 'tailwindcss';
+@import '../../theme.css';
+
+/*
+ * BookingForm — formulario de reserva de entradas. Mismo lenguaje visual
+ * "ticket" oscuro que ConcertCard y FeaturedBanner (ver sus .css): tarjeta
+ * con fondo en degradé, borde sutil y resplandor de acento neón; aquí ese
+ * lenguaje se aplica además a los campos del formulario y al botón de envío.
+ */
+
+.booking-form {
+    @apply relative mx-auto flex max-w-[420px] flex-col gap-5 overflow-hidden rounded-[20px] border border-border p-7 text-left font-sans;
+    background: linear-gradient(155deg, var(--color-surface-from), var(--color-surface-to));
+    box-shadow: 0 20px 45px -25px rgba(0, 0, 0, 0.6);
+}
+
+.booking-form::after {
+    content: '';
+    @apply pointer-events-none absolute -top-[60px] -right-[60px] h-40 w-40 opacity-35 blur-[10px];
+    background: radial-gradient(circle, var(--color-accent-2), transparent 70%);
+}
+
+.booking-form h2 {
+    @apply relative m-0 text-xl font-extrabold tracking-tight text-foreground-strong;
+}
+
+.booking-form__form {
+    @apply relative flex flex-col gap-4;
+}
+
+.form-group {
+    @apply flex flex-col gap-1.5;
+}
+
+.form-group label {
+    @apply text-xs font-bold tracking-[0.6px] text-foreground uppercase opacity-80;
+}
+
+.form-group input {
+    @apply rounded-xl border border-border px-3.5 py-2.5 text-sm text-foreground-strong outline-none transition-colors;
+    background: color-mix(in srgb, var(--color-surface-from) 60%, var(--color-bg));
+}
+
+.form-group input::placeholder {
+    @apply text-foreground opacity-50;
+}
+
+.form-group input:focus {
+    @apply border-accent;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 25%, transparent);
+}
+
+.form-group input:invalid:not(:placeholder-shown) {
+    @apply border-live;
+}
+
+/*
+ * Mensaje de error de validación/reserva. --message-timeout define cuánto
+ * tarda en cerrarse solo (ver la barra de progreso más abajo) — debe
+ * coincidir con MESSAGE_TIMEOUT_MS en views/bookingform.view.ts, que es
+ * quien programa el cierre real del mensaje.
+ */
+.error-box {
+    @apply relative overflow-hidden rounded-xl border border-live/40 bg-live/10 px-3.5 py-2.5 text-sm font-semibold text-live;
+    --message-timeout: 5s;
+}
+
+/* Variante de éxito — misma caja, reutilizada tras una reserva confirmada */
+.error-box--success {
+    @apply border-accent-2/40 bg-accent-2/10 text-accent-2;
+}
+
+/*
+ * Barra de progreso "en retroceso": un pseudo-elemento en vez de un div
+ * aparte, para no tocar el HTML y heredar automáticamente el ancho de la
+ * caja. currentColor toma el rojo o el violeta según la variante de arriba.
+ */
+.error-box::after {
+    content: '';
+    @apply pointer-events-none absolute inset-x-0 bottom-0 h-[3px];
+    background: currentColor;
+    opacity: 0.5;
+    transform-origin: left;
+    animation: booking-form-message-timeout var(--message-timeout) linear forwards;
+}
+
+@keyframes booking-form-message-timeout {
+    from {
+        transform: scaleX(1);
+    }
+    to {
+        transform: scaleX(0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .error-box::after {
+        animation: none;
+    }
+}
+
+.booking-form__submit {
+    @apply cursor-pointer rounded-xl border-0 px-4 py-3 text-sm font-bold tracking-[0.4px] text-white uppercase transition-transform;
+    background: linear-gradient(120deg, var(--color-accent), var(--color-accent-2));
+}
+
+.booking-form__submit:hover {
+    @apply -translate-y-0.5;
+    box-shadow: 0 12px 30px -12px color-mix(in srgb, var(--color-accent) 55%, transparent);
+}
+
+.booking-form__submit:active {
+    @apply translate-y-0;
+    box-shadow: none;
+}
+
+.booking-form__submit:disabled {
+    @apply cursor-not-allowed opacity-50;
+    box-shadow: none;
+    transform: none;
+}
+
+@media (max-width: 480px) {
+    .booking-form {
+        @apply p-5;
+    }
+}
