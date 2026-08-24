@@ -2,6 +2,7 @@ import { type ConcertModel } from '@/models';
 import { getConcerts } from '@/services/concert.service';
 import { createConcertCardElement } from '@/components/ConcertCard';
 import { createFeaturedBannerElement } from '@/components/FeaturedBanner';
+import { renderBookingFormView } from '@/views/bookingform.view';
 
 const CATALOG_EMPTY_MESSAGE = 'No hay conciertos programados por el momento. ¡Vuelve pronto!';
 
@@ -15,6 +16,7 @@ View component: CatalogView
 interface CatalogSections {
     featuredContainer: HTMLElement;
     catalogContainer: HTMLElement;
+    bookingFormContainer: HTMLElement;
 }
 
 // Builds the view's static skeleton (fixed markup we wrote ourselves —
@@ -31,11 +33,17 @@ function renderShell(container: HTMLElement): CatalogSections {
             <h2 id="catalog-heading" class="section-heading">Revisa el catálogo de conciertos</h2>
             <div id="catalog-container"></div>
         </section>
+        
+        <section class="booking-form-section" aria-labelledby="booking-form-heading">
+            <h2 id="booking-form-heading" class="section-heading">Formulario de reserva</h2>
+            <div id="booking-form-container"></div>
+        </section>
         `;
 
     return {
         featuredContainer: container.querySelector<HTMLElement>('#featured-banner')!,
         catalogContainer: container.querySelector<HTMLElement>('#catalog-container')!,
+        bookingFormContainer: container.querySelector<HTMLElement>('#booking-form-container')!,
     };
 }
 
@@ -62,8 +70,10 @@ function renderCatalog(container: HTMLElement, concerts: ConcertModel[]): void {
 // match the contract — whoever calls this view decides what to do about it.
 export async function renderCatalogView(container: HTMLElement): Promise<void> {
     const concerts = await getConcerts();
-    const { featuredContainer, catalogContainer } = renderShell(container);
+    const { featuredContainer, catalogContainer, bookingFormContainer } = renderShell(container);
 
     renderFeatured(featuredContainer, concerts);
     renderCatalog(catalogContainer, concerts);
+    //TODO: render Booking Form - concert o concerts?
+    renderBookingFormView(bookingFormContainer);
 }

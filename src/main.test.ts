@@ -39,7 +39,7 @@ describe('main', () => {
         expect(app?.querySelector('#featured-banner .featured-banner')).not.toBeNull();
         expect(
             Array.from(app?.querySelectorAll('.section-heading') ?? []).map((el) => el.textContent),
-        ).toEqual(['Destacados', 'Revisa el catálogo de conciertos']);
+        ).toEqual(['Destacados', 'Revisa el catálogo de conciertos', 'Formulario de reserva']);
         expect(app?.querySelectorAll('.concert-card').length).toBe(concertsLists.length);
     });
 
