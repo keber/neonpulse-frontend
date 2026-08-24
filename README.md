@@ -47,18 +47,23 @@ Abre la URL que imprime Vite (por defecto `http://localhost:5173`).
 src/
 ├── components/
 │   ├── ConcertCard/
-│   │   ├── ConcertCard.ts   # arma la tarjeta completa (clona un <template>)
-│   │   ├── StatusBadge.ts   # átomo: la etiqueta de estado (Próximo/En vivo/…)
-│   │   ├── ConcertCard.css  # estilos del componente, con @apply de Tailwind
-│   │   └── index.ts         # barrel público + import del CSS
+│   │   ├── ConcertCard.ts     # arma la tarjeta completa (clona un <template>)
+│   │   ├── StatusBadge.ts     # átomo: la etiqueta de estado (Próximo/En vivo/…)
+│   │   ├── ConcertCard.css    # estilos del componente, con @apply de Tailwind
+│   │   └── index.ts           # barrel público + import del CSS
+│   ├── FeaturedBanner/        # molécula: banner del concierto destacado (o fallback genérico)
+│   ├── ErrorFallback/         # red de seguridad: UI global si el render falla
 │   └── icons/
-│       ├── icon.ts          # envuelve lucide-static como elementos <svg>
+│       ├── icon.ts            # envuelve lucide-static como elementos <svg>
 │       └── index.ts
-├── models/                  # tipos de dominio (ConcertModel, ConcertStatus)
-├── mocks/                   # datos de ejemplo mientras no hay backend
-├── style.css                # shell global de la página + Tailwind
-├── theme.css                # tokens de diseño compartidos (paleta, fuente, animación)
-└── main.ts                  # punto de entrada: arma el catálogo y lo monta en #app
+├── lib/
+│   ├── concertDate.ts         # día/mes/año de una fecha de concierto, en UTC
+│   └── concertsApi.ts         # fetchConcerts(): trae y valida el catálogo (public/data/concerts.json)
+├── models/                    # tipos de dominio (ConcertModel, ConcertStatus)
+├── mocks/                     # fixture de datos para tests (la app en runtime ya no lee de acá)
+├── style.css                  # shell global de la página + Tailwind
+├── theme.css                  # tokens de diseño compartidos (paleta, fuente, animación)
+└── main.ts                    # punto de entrada: carga el catálogo (fetch) y lo monta en #app
 ```
 
 Cada archivo `*.test.ts` vive junto al módulo que prueba (p. ej. `ConcertCard.test.ts` al lado de `ConcertCard.ts`).
@@ -69,9 +74,13 @@ Cada archivo `*.test.ts` vive junto al módulo que prueba (p. ej. `ConcertCard.t
 
 ## Arquitectura
 
-Los componentes siguen una idea de atomic design informal (ver el comentario en `main.ts`): átomo (`StatusBadge`, `icon`) → molécula (`ConcertCard`) → catálogo (`main.ts`). No hay virtual DOM ni reactividad: cada función de componente devuelve un `HTMLElement` real, construido clonando un `<template>` propio y rellenando las partes dinámicas con `textContent`/`append` — nunca con `innerHTML` sobre datos externos, para no abrir una vía de inyección de HTML.
+Los componentes siguen una idea de atomic design informal (ver el comentario en `main.ts`): átomo (`StatusBadge`, `icon`) → molécula (`ConcertCard`, `FeaturedBanner`) → catálogo (`main.ts`). No hay virtual DOM ni reactividad: cada función de componente devuelve un `HTMLElement` real, construido clonando un `<template>` propio y rellenando las partes dinámicas con `textContent`/`append` — nunca con `innerHTML` sobre datos externos, para no abrir una vía de inyección de HTML.
 
-Las fechas se leen siempre con los métodos `getUTC*()` de `Date`: como los mocks se construyen con strings `"YYYY-MM-DD"` (medianoche UTC), leerlos en hora local podía mostrar el día anterior según el huso horario del navegador.
+Las fechas se leen siempre con los métodos `getUTC*()` de `Date`: como las fechas llegan como strings `"YYYY-MM-DD"` (medianoche UTC) tanto en los mocks como en el JSON que sirve `concertsApi`, leerlas en hora local podía mostrar el día anterior según el huso horario del navegador.
+
+### Carga de datos
+
+El catálogo se carga en runtime con `fetchConcerts()` (`src/lib/concertsApi.ts`): hace `fetch` a `/data/concerts.json` (servido desde `public/data/`, simulando lo que vendría de un backend real), valida cada registro contra el contrato esperado con un _type predicate_ (`isConcertDto`) — `.every()` fail-fast, no un `as` de compilación sin respaldo en runtime — y recién ahí convierte cada `date` de string a `Date`. Si la respuesta no es `ok`, o algún registro no cumple el contrato, `fetchConcerts` lanza; el `try/catch` de nivel superior en `main.ts` lo atrapa y muestra `ErrorFallback`. `src/mocks/concerts.mocks.ts` quedó como fixture exclusivo de la suite de tests, ya no es la fuente de datos de la app.
 
 ## Tests
 

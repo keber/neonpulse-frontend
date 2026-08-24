@@ -1,7 +1,7 @@
 import './style.css';
 
 import { type ConcertModel } from '@/models';
-import { concertsLists } from './mocks/concerts.mocks';
+import { fetchConcerts } from '@/lib/concertsApi';
 import { createConcertCardElement } from './components/ConcertCard';
 import { createFeaturedBannerElement } from './components/FeaturedBanner';
 import { createErrorFallbackElement } from './components/ErrorFallback';
@@ -12,23 +12,29 @@ const appContainer = document.getElementById('app');
 
 if (appContainer) {
     try {
-        renderApp(appContainer);
+        await renderApp(appContainer);
     } catch (error) {
         // Red de seguridad: cualquier error inesperado durante el render
-        // (dato corrupto, un componente que lanza, etc.) reemplaza toda la
-        // app por un fallback genérico en vez de dejarla a medio renderizar.
+        // (fetch que falla o responde no-ok, dato con forma inválida, un
+        // componente que lanza, etc.) reemplaza toda la app por un fallback
+        // genérico en vez de dejarla a medio renderizar.
         console.error('[NeonPulse] Error inesperado al renderizar la app:', error);
         appContainer.replaceChildren(createErrorFallbackElement());
     }
 }
 
-function renderApp(appContainer: HTMLElement): void {
+async function renderApp(appContainer: HTMLElement): Promise<void> {
     /*
     Componente átomo: ConcertCard, StatusBadge
     Componente molécula: FeaturedBanner
     Componente organismo: ConcertCatalog
     Componente sistema: App
      */
+    // Trae el catálogo con fetchConcerts() (src/lib/concertsApi.ts): lanza
+    // si la respuesta no es ok o algún registro no cumple el contrato
+    // esperado, lo que el try/catch de arriba resuelve con el fallback.
+    const concertsLists = await fetchConcerts();
+
     appContainer.innerHTML = `
         <section class="featured-banner-section" aria-labelledby="featured-banner-heading">
             <h2 id="featured-banner-heading" class="section-heading">Destacados</h2>
