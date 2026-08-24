@@ -1,7 +1,6 @@
 import './style.css';
 
 import { type ConcertModel } from '@/models';
-import { concertsLists } from './mocks/concerts.mocks';
 import { createConcertCardElement } from './components/ConcertCard';
 import { createFeaturedBannerElement } from './components/FeaturedBanner';
 import { createErrorFallbackElement } from './components/ErrorFallback';
@@ -12,7 +11,7 @@ const appContainer = document.getElementById('app');
 
 if (appContainer) {
     try {
-        renderApp(appContainer);
+        await renderApp(appContainer);
     } catch (error) {
         // Red de seguridad: cualquier error inesperado durante el render
         // (dato corrupto, un componente que lanza, etc.) reemplaza toda la
@@ -22,13 +21,15 @@ if (appContainer) {
     }
 }
 
-function renderApp(appContainer: HTMLElement): void {
+async function renderApp(appContainer: HTMLElement): Promise<void> {
     /*
     Componente átomo: ConcertCard, StatusBadge
     Componente molécula: FeaturedBanner
     Componente organismo: ConcertCatalog
     Componente sistema: App
      */
+    const concertsLists = await loadConcerts();
+
     appContainer.innerHTML = `
         <section class="featured-banner-section" aria-labelledby="featured-banner-heading">
             <h2 id="featured-banner-heading" class="section-heading">Destacados</h2>
@@ -60,4 +61,15 @@ function renderCatalog(container: HTMLElement, concerts: ConcertModel[]): void {
     concerts
         .toSorted((a, b) => a.date.getTime() - b.date.getTime())
         .forEach((concert) => container.appendChild(createConcertCardElement(concert)));
+}
+
+// Carga dinámica de los datos de conciertos.
+async function loadConcerts(): Promise<ConcertModel[]> {
+    const mod = await import('./mocks/concerts.mocks');
+
+    if (!mod.concertsLists) {
+        throw new Error('El módulo de mocks no exporta "concertsLists"');
+    }
+
+    return mod.concertsLists;
 }
