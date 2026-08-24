@@ -17,8 +17,8 @@ function buildConcert(overrides: Partial<ConcertModel> = {}): ConcertModel {
 
 describe('createConcertCardElement', () => {
     beforeEach(() => {
-        // Fija el "hoy" del sistema para que la lógica de "mostrar año solo si
-        // es distinto al actual" sea determinista en las pruebas.
+        // Pins the system's "today" so the "only show the year when it
+        // differs from the current one" logic is deterministic in tests.
         vi.setSystemTime(new Date('2026-01-15T12:00:00Z'));
     });
 
@@ -50,9 +50,9 @@ describe('createConcertCardElement', () => {
     });
 
     it('lee el día y el mes en UTC para no correrse un día según el huso horario local', () => {
-        // Regresión: new Date('2026-08-22') es medianoche UTC; usar
-        // getDate()/getMonth() (hora local) podía mostrar el 21 de agosto
-        // en husos horarios detrás de UTC.
+        // Regression: new Date('2026-08-22') is UTC midnight; using
+        // getDate()/getMonth() (local time) could show August 21st in
+        // timezones behind UTC.
         const card = createConcertCardElement(buildConcert({ date: new Date('2026-08-22') }));
 
         expect(card.querySelector('.concert-card__day')?.textContent).toBe('22');

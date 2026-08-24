@@ -45,6 +45,12 @@ Abre la URL que imprime Vite (por defecto `http://localhost:5173`).
 
 ```
 src/
+├── api/
+│   └── concert.api.ts         # fetchConcertsPayload(): fetch + valida el contrato (ConcertDto)
+├── services/
+│   └── concert.service.ts     # getConcerts(): pide el payload a la API y lo mapea a ConcertModel
+├── views/
+│   └── catalog.view.ts        # renderCatalogView(): arma el shell y pinta destacado + catálogo
 ├── components/
 │   ├── ConcertCard/
 │   │   ├── ConcertCard.ts     # arma la tarjeta completa (clona un <template>)
@@ -57,13 +63,12 @@ src/
 │       ├── icon.ts            # envuelve lucide-static como elementos <svg>
 │       └── index.ts
 ├── lib/
-│   ├── concertDate.ts         # día/mes/año de una fecha de concierto, en UTC
-│   └── concertsApi.ts         # fetchConcerts(): trae y valida el catálogo (public/data/concerts.json)
+│   └── concertDate.ts         # día/mes/año de una fecha de concierto, en UTC
 ├── models/                    # tipos de dominio (ConcertModel, ConcertStatus)
 ├── mocks/                     # fixture de datos para tests (la app en runtime ya no lee de acá)
 ├── style.css                  # shell global de la página + Tailwind
 ├── theme.css                  # tokens de diseño compartidos (paleta, fuente, animación)
-└── main.ts                    # punto de entrada: carga el catálogo (fetch) y lo monta en #app
+└── main.ts                    # bootstrap: busca #app, delega a la vista, maneja el error global
 ```
 
 Cada archivo `*.test.ts` vive junto al módulo que prueba (p. ej. `ConcertCard.test.ts` al lado de `ConcertCard.ts`).
@@ -74,13 +79,27 @@ Cada archivo `*.test.ts` vive junto al módulo que prueba (p. ej. `ConcertCard.t
 
 ## Arquitectura
 
-Los componentes siguen una idea de atomic design informal (ver el comentario en `main.ts`): átomo (`StatusBadge`, `icon`) → molécula (`ConcertCard`, `FeaturedBanner`) → catálogo (`main.ts`). No hay virtual DOM ni reactividad: cada función de componente devuelve un `HTMLElement` real, construido clonando un `<template>` propio y rellenando las partes dinámicas con `textContent`/`append` — nunca con `innerHTML` sobre datos externos, para no abrir una vía de inyección de HTML.
+Los componentes siguen una idea de atomic design informal (ver el comentario en `catalog.view.ts`): átomo (`StatusBadge`, `icon`) → molécula (`ConcertCard`, `FeaturedBanner`) → vista (`catalog.view.ts`) → bootstrap (`main.ts`). No hay virtual DOM ni reactividad: cada función de componente devuelve un `HTMLElement` real, construido clonando un `<template>` propio y rellenando las partes dinámicas con `textContent`/`append` — nunca con `innerHTML` sobre datos externos, para no abrir una vía de inyección de HTML.
 
-Las fechas se leen siempre con los métodos `getUTC*()` de `Date`: como las fechas llegan como strings `"YYYY-MM-DD"` (medianoche UTC) tanto en los mocks como en el JSON que sirve `concertsApi`, leerlas en hora local podía mostrar el día anterior según el huso horario del navegador.
+Las fechas se leen siempre con los métodos `getUTC*()` de `Date`: como las fechas llegan como strings `"YYYY-MM-DD"` (medianoche UTC) tanto en los mocks como en el JSON que sirve `concert.api.ts`, leerlas en hora local podía mostrar el día anterior según el huso horario del navegador.
 
-### Carga de datos
+### Capas de datos y de vista
 
-El catálogo se carga en runtime con `fetchConcerts()` (`src/lib/concertsApi.ts`): hace `fetch` a `/data/concerts.json` (servido desde `public/data/`, simulando lo que vendría de un backend real), valida cada registro contra el contrato esperado con un _type predicate_ (`isConcertDto`) — `.every()` fail-fast, no un `as` de compilación sin respaldo en runtime — y recién ahí convierte cada `date` de string a `Date`. Si la respuesta no es `ok`, o algún registro no cumple el contrato, `fetchConcerts` lanza; el `try/catch` de nivel superior en `main.ts` lo atrapa y muestra `ErrorFallback`. `src/mocks/concerts.mocks.ts` quedó como fixture exclusivo de la suite de tests, ya no es la fuente de datos de la app.
+El acceso a datos está partido en dos capas con responsabilidades distintas:
+
+- **`src/api/concert.api.ts`** — capa de transporte: `fetchConcertsPayload()` hace `fetch` a
+  `/data/concerts.json` (servido desde `public/data/`, simulando lo que vendría de un backend
+  real), chequea `response.ok` y valida cada registro contra el contrato esperado con un _type
+  predicate_ (`isConcertDto`) — `.every()` fail-fast, no un `as` de compilación sin respaldo en
+  runtime. No sabe nada de `ConcertModel`.
+- **`src/services/concert.service.ts`** — capa de negocio: `getConcerts()` llama a la API y
+  recién ahí convierte cada `date` de string a `Date`. No sabe nada de `fetch`/HTTP.
+
+Si la respuesta no es `ok`, o algún registro no cumple el contrato, la cadena `getConcerts()` →
+`fetchConcertsPayload()` lanza; `src/views/catalog.view.ts` (`renderCatalogView`) es quien pide
+los datos y arma la página, y el `try/catch` de nivel superior en `main.ts` atrapa cualquier
+falla de esa cadena y muestra `ErrorFallback`. `src/mocks/concerts.mocks.ts` quedó como fixture
+exclusivo de la suite de tests, ya no es la fuente de datos de la app.
 
 ## Tests
 

@@ -21,7 +21,7 @@ describe('main', () => {
 
     afterEach(() => {
         vi.restoreAllMocks();
-        vi.unstubAllGlobals(); // limpia el stub de fetch entre tests
+        vi.unstubAllGlobals(); // clears the fetch stub between tests
         vi.doUnmock('./components/ConcertCard');
         document.body.innerHTML = '';
     });
@@ -61,7 +61,7 @@ describe('main', () => {
             .map((concert) => concert.title);
 
         expect(renderedTitles).toEqual(expectedTitles);
-        // Regresión: el ordenamiento no debe mutar el array exportado por el módulo de mocks.
+        // Regression: sorting must not mutate the array exported by the mocks module.
         expect(concertsLists.map((concert) => concert.id)).toEqual(originalOrder);
     });
 
@@ -82,8 +82,9 @@ describe('main', () => {
             'No hay conciertos programados por el momento. ¡Vuelve pronto!',
         );
         expect(app?.querySelectorAll('.concert-card').length).toBe(0);
-        // Sin conciertos tampoco hay nada para destacar: el banner cae a su
-        // variante genérica y avisa por consola (comportamiento de FeaturedBanner).
+        // With no concerts there's also nothing to feature: the banner falls
+        // back to its generic variant and warns via console (FeaturedBanner's
+        // own behavior).
         expect(app?.querySelector('.featured-banner--generic')).not.toBeNull();
         expect(console.error).toHaveBeenCalled();
     });

@@ -1,7 +1,7 @@
-// Utilidad compartida para leer día/mes/año de la fecha de un concierto.
-// Se extrajo de ConcertCard porque FeaturedBanner también necesita
-// formatear la fecha del destacado y no queríamos duplicar la tabla de
-// meses ni la lógica de UTC en dos componentes.
+// Shared utility to read a concert's date into day/month/year. Extracted
+// from ConcertCard because FeaturedBanner also needs to format the
+// featured concert's date, and we didn't want to duplicate the month
+// table or the UTC logic across two components.
 export const MONTHS_ES = [
     'ENE',
     'FEB',
@@ -25,9 +25,9 @@ export interface ConcertDateParts {
 }
 
 /**
- * Se usan los métodos UTC porque las fechas se construyen a partir de
- * strings tipo "YYYY-MM-DD", que Date interpreta como medianoche UTC;
- * leerlas en hora local podía mostrar el día anterior según el huso horario.
+ * UTC methods are used because dates are built from "YYYY-MM-DD" strings,
+ * which Date interprets as UTC midnight; reading them in local time could
+ * show the previous day depending on the browser's timezone.
  */
 export function getConcertDateParts(date: Date): ConcertDateParts {
     const day = date.getUTCDate();

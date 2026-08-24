@@ -1,7 +1,7 @@
-// Átomo: la etiqueta de estado del concierto (Próximo/En vivo/Finalizado/
-// Cancelado). Se extrae de ConcertCard porque es una pieza reusable en sí
-// misma — p. ej. si más adelante aparece un listado compacto (ConcertGrid)
-// que solo necesita el badge sin el resto de la tarjeta.
+// Atom: the concert's status badge (Upcoming/Live/Finished/Canceled).
+// Extracted from ConcertCard because it's a reusable piece in its own
+// right — e.g. if a compact listing (ConcertGrid) shows up later that
+// only needs the badge without the rest of the card.
 import { ConcertStatus } from '@/models';
 
 const STATUS_LABELS: Record<ConcertStatus, string> = {
