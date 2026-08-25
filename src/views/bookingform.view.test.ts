@@ -94,7 +94,7 @@ describe('renderBookingFormView', () => {
         expect(errorBox.hidden).toBe(true);
     });
 
-    it('con datos válidos, muestra un mensaje de éxito con el email ingresado y resetea el formulario', () => {
+    it('con datos válidos, muestra un mensaje de éxito con el email y la cantidad (plural) y resetea el formulario', () => {
         const { form, email, quantity, errorBox } = getElements();
         email.value = 'user@example.com';
         quantity.value = '3';
@@ -104,8 +104,35 @@ describe('renderBookingFormView', () => {
         expect(errorBox.hidden).toBe(false);
         expect(errorBox.classList.contains('error-box--success')).toBe(true);
         expect(errorBox.textContent).toContain('user@example.com');
+        expect(errorBox.textContent).toContain('3 entradas');
         expect(email.value).toBe('');
         expect(quantity.value).toBe('');
+    });
+
+    it('con cantidad 1, el mensaje de éxito usa el singular ("1 entrada")', () => {
+        const { form, email, quantity, errorBox } = getElements();
+        email.value = 'user@example.com';
+        quantity.value = '1';
+
+        submit(form);
+
+        expect(errorBox.textContent).toContain('1 entrada');
+        expect(errorBox.textContent).not.toContain('1 entradas');
+    });
+
+    it('rechaza una cantidad decimal aunque sea aceptada por checkValidity nativo', () => {
+        // El default del step nativo (1) ya rechaza esto, así que este test
+        // documenta la redundancia intencional: booking.service.ts es la
+        // fuente de verdad aunque cambie el markup del <input>.
+        const { form, email, quantity, errorBox } = getElements();
+        email.value = 'user@example.com';
+        quantity.value = '3.5';
+
+        submit(form);
+
+        expect(errorBox.hidden).toBe(false);
+        expect(errorBox.classList.contains('error-box--success')).toBe(false);
+        expect(document.activeElement).toBe(quantity);
     });
 
     it('el mensaje se cierra solo después del timeout', () => {
