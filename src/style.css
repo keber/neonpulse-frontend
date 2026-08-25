@@ -90,6 +90,58 @@ body {
     @apply m-0 rounded-2xl border border-dashed border-border p-10 text-center text-foreground opacity-70;
 }
 
+/*
+ * Esqueleto de carga — placeholders con el mismo lenguaje "ticket" que
+ * ConcertCard/FeaturedBanner/BookingForm (superficie en degradé + borde
+ * sutil), con un barrido de brillo para comunicar "cargando" en vez de un
+ * bloque inerte. Su markup vive como HTML estático en index.html y
+ * desaparece solo en cuanto catalog.view.ts reemplaza el contenido de #app.
+ */
+.skeleton {
+    @apply relative overflow-hidden rounded-[20px] border border-border;
+    background: linear-gradient(155deg, var(--color-surface-from), var(--color-surface-to));
+}
+
+.skeleton::after {
+    content: '';
+    @apply absolute inset-0;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        color-mix(in srgb, var(--color-foreground-strong) 10%, transparent),
+        transparent
+    );
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.6s ease-in-out infinite;
+}
+
+@keyframes skeleton-shimmer {
+    0% {
+        background-position: 150% 0;
+    }
+    100% {
+        background-position: -50% 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .skeleton::after {
+        animation: none;
+    }
+}
+
+.skeleton-banner {
+    @apply h-[172px];
+}
+
+.skeleton-card {
+    @apply h-[136px];
+}
+
+.skeleton-form {
+    @apply mx-auto h-[300px] max-w-[420px];
+}
+
 /* Footer */
 
 .site-footer {

@@ -4,13 +4,241 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>NeonPulse</title>
+        <style>
+            /*
+                CSS crítico: shell (header/#app/footer) + esqueleto de carga,
+                inline para que ya se vea con la identidad visual de
+                NeonPulse desde el primer pintado del HTML, sin depender de
+                que cargue el bundle JS ni la hoja completa (src/style.css).
+                Esto importa sobre todo en dev: Vite inyecta esa hoja vía JS
+                junto con el resto del grafo de módulos (un archivo por
+                import, sin bundlear), y en red lenta eso puede tardar varios
+                segundos — durante los cuales, sin este bloque, se ve HTML
+                sin estilo (incluido el texto de "Cargando cartelera…", que
+                debería estar oculto). Es un subconjunto deliberadamente
+                duplicado de theme.css/style.css; si cambiás esos
+                tokens/reglas, actualizá también este bloque. Una vez que la
+                hoja completa termina de cargar, la reemplaza sin saltos
+                porque apunta a las mismas clases con los mismos valores.
+            */
+            * {
+                box-sizing: border-box;
+            }
+
+            html,
+            body {
+                margin: 0;
+                min-height: 100%;
+            }
+
+            html {
+                color-scheme: dark;
+            }
+
+            body {
+                display: flex;
+                min-height: 100%;
+                flex-direction: column;
+                font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+                font-size: 16px;
+                color: #beb8d1;
+                background:
+                    radial-gradient(circle at 15% -10%, rgba(124, 58, 237, 0.35), transparent 45%),
+                    radial-gradient(circle at 90% 0%, rgba(255, 46, 154, 0.25), transparent 40%),
+                    #0b0710;
+                background-attachment: fixed;
+            }
+
+            .site-header {
+                margin: 0 auto;
+                max-width: 960px;
+                padding: 56px 24px 8px;
+            }
+
+            .site-header h1 {
+                margin: 0 0 8px;
+                font-size: 44px;
+                font-weight: 800;
+                letter-spacing: -0.025em;
+                color: transparent;
+                background: linear-gradient(90deg, #ffffff, #ff2e9a 65%, #7c3aed);
+                background-clip: text;
+                -webkit-background-clip: text;
+            }
+
+            .site-header p {
+                margin: 0;
+                font-size: 16px;
+                color: #beb8d1;
+                opacity: 0.8;
+            }
+
+            #app {
+                margin: 0 auto;
+                display: flex;
+                width: 100%;
+                max-width: 960px;
+                flex: 1 1 auto;
+                flex-direction: column;
+                gap: 40px;
+                padding: 32px 24px 80px;
+            }
+
+            .section-heading {
+                margin: 0 0 16px;
+                font-size: 18px;
+                font-weight: 700;
+                letter-spacing: -0.025em;
+                color: #ffffff;
+            }
+
+            #catalog-container {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+                gap: 20px;
+            }
+
+            .skeleton {
+                position: relative;
+                overflow: hidden;
+                border-radius: 20px;
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                background: linear-gradient(155deg, #1a1025, #0b0710);
+            }
+
+            .skeleton::after {
+                content: '';
+                position: absolute;
+                inset: 0;
+                background: linear-gradient(
+                    90deg,
+                    transparent,
+                    rgba(255, 255, 255, 0.1),
+                    transparent
+                );
+                background-size: 200% 100%;
+                animation: skeleton-shimmer 1.6s ease-in-out infinite;
+            }
+
+            @keyframes skeleton-shimmer {
+                0% {
+                    background-position: 150% 0;
+                }
+                100% {
+                    background-position: -50% 0;
+                }
+            }
+
+            @media (prefers-reduced-motion: reduce) {
+                .skeleton::after {
+                    animation: none;
+                }
+            }
+
+            .skeleton-banner {
+                height: 172px;
+            }
+
+            .skeleton-card {
+                height: 136px;
+            }
+
+            .skeleton-form {
+                margin: 0 auto;
+                height: 300px;
+                max-width: 420px;
+            }
+
+            .sr-only {
+                position: absolute;
+                width: 1px;
+                height: 1px;
+                padding: 0;
+                margin: -1px;
+                overflow: hidden;
+                clip: rect(0, 0, 0, 0);
+                white-space: nowrap;
+                border-width: 0;
+            }
+
+            .site-footer {
+                margin: auto auto 0;
+                width: 100%;
+                max-width: 960px;
+                border-top: 1px solid rgba(255, 255, 255, 0.08);
+                padding: 24px;
+                text-align: center;
+                font-size: 14px;
+                color: #beb8d1;
+                opacity: 0.6;
+            }
+
+            @media (max-width: 640px) {
+                .site-header {
+                    padding: 40px 16px 8px;
+                }
+
+                .site-header h1 {
+                    font-size: 32px;
+                }
+
+                #app {
+                    padding: 24px 16px 56px;
+                }
+
+                #catalog-container {
+                    grid-template-columns: 1fr;
+                }
+
+                .site-footer {
+                    padding: 24px 16px;
+                }
+            }
+        </style>
     </head>
     <body>
         <header class="site-header">
             <h1>NeonPulse</h1>
             <p>Cartelera Oficial de Conciertos y Eventos en Vivo</p>
         </header>
-        <main id="app"></main>
+        <!--
+            Esqueleto de carga: markup estático (sin datos) que el navegador
+            pinta de inmediato, antes de que el bundle JS se ejecute y de que
+            termine el fetch del catálogo (ver getConcerts() en
+            src/services/concert.service.ts). Su estructura calca la que
+            arma renderShell() en src/views/catalog.view.ts a propósito: en
+            cuanto los datos llegan, esa función reemplaza TODO el innerHTML
+            de #app, así que este bloque desaparece solo. Estilos en
+            src/style.css (clases .skeleton*); mantené aria-busy="true" acá y
+            quitalo desde main.ts una vez que el render termine (éxito o
+            error).
+        -->
+        <main id="app" aria-busy="true">
+            <section class="featured-banner-section" aria-labelledby="featured-banner-heading">
+                <h2 id="featured-banner-heading" class="section-heading">Destacados</h2>
+                <div id="featured-banner">
+                    <div class="skeleton skeleton-banner" aria-hidden="true"></div>
+                </div>
+            </section>
+
+            <section class="catalog-section" aria-labelledby="catalog-heading">
+                <h2 id="catalog-heading" class="section-heading">Revisa el catálogo de conciertos</h2>
+                <div id="catalog-container">
+                    <div class="skeleton skeleton-card" aria-hidden="true"></div>
+                    <div class="skeleton skeleton-card" aria-hidden="true"></div>
+                    <div class="skeleton skeleton-card" aria-hidden="true"></div>
+                </div>
+            </section>
+
+            <section class="booking-form-section" aria-labelledby="booking-form-heading">
+                <h2 id="booking-form-heading" class="section-heading">Formulario de reserva</h2>
+                <div id="booking-form-container">
+                    <div class="skeleton skeleton-form" aria-hidden="true"></div>
+                </div>
+            </section>
+
+            <p class="sr-only" role="status">Cargando cartelera…</p>
+        </main>
         <footer class="site-footer">
             <p>&copy; 2026 NeonPulse. Todos los derechos reservados.</p>
         </footer>
