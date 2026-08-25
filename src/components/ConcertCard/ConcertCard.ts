@@ -10,25 +10,10 @@ import { getConcertDateParts } from '@/lib/concertDate';
 import { requireElement } from '@/lib/dom';
 import { icon } from '../icons';
 import { createStatusBadgeElement, getStatusModifier } from './StatusBadge';
+import templateHtml from './ConcertCard_template.html?raw';
 
 const TEMPLATE = document.createElement('template');
-TEMPLATE.innerHTML = `
-    <article class="concert-card">
-        <div class="concert-card__date">
-            <span class="concert-card__day"></span>
-            <span class="concert-card__month"></span>
-            <span class="concert-card__year"></span>
-        </div>
-        <div class="concert-card__body">
-            <h3 class="concert-card__title"></h3>
-            <p class="concert-card__band"></p>
-            <div class="concert-card__meta">
-                <span class="concert-card__location"></span>
-                <span class="concert-card__time"></span>
-            </div>
-        </div>
-    </article>
-`;
+TEMPLATE.innerHTML = templateHtml;
 
 export function createConcertCardElement(concert: ConcertModel): HTMLElement {
     const card = TEMPLATE.content.firstElementChild!.cloneNode(true) as HTMLElement;

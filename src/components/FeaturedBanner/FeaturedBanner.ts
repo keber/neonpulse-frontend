@@ -5,6 +5,8 @@ import { type ConcertModel, ConcertStatus } from '@/models';
 import { getConcertDateParts } from '@/lib/concertDate';
 import { icon } from '../icons';
 import { createStatusBadgeElement } from '../ConcertCard/StatusBadge';
+import templateHtml from './FeaturedBanner_template.html?raw';
+import templateHtmlGeneric from './FeaturedBannerGeneric_template.html?raw';
 
 export interface FeaturedSelection {
     concert: ConcertModel | null;
@@ -57,30 +59,10 @@ export function selectFeaturedConcert(concerts: ConcertModel[]): FeaturedSelecti
 }
 
 const TEMPLATE = document.createElement('template');
-TEMPLATE.innerHTML = `
-    <article class="featured-banner">
-        <div class="featured-banner__body">
-            <span class="featured-banner__eyebrow">Destacado</span>
-            <h3 class="featured-banner__title"></h3>
-            <p class="featured-banner__band"></p>
-            <div class="featured-banner__meta">
-                <span class="featured-banner__date"></span>
-                <span class="featured-banner__location"></span>
-            </div>
-        </div>
-    </article>
-`;
+TEMPLATE.innerHTML = templateHtml;
 
 const GENERIC_TEMPLATE = document.createElement('template');
-GENERIC_TEMPLATE.innerHTML = `
-    <article class="featured-banner featured-banner--generic">
-        <div class="featured-banner__body">
-            <span class="featured-banner__eyebrow">Destacado</span>
-            <h3 class="featured-banner__title">Muy pronto, nuevos conciertos</h3>
-            <p class="featured-banner__band">Todavía no hay shows confirmados en la cartelera.</p>
-        </div>
-    </article>
-`;
+GENERIC_TEMPLATE.innerHTML = templateHtmlGeneric;
 
 function renderGenericBanner(): HTMLElement {
     return GENERIC_TEMPLATE.content.firstElementChild!.cloneNode(true) as HTMLElement;
