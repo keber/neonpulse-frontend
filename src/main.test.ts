@@ -16,7 +16,9 @@ function toRawConcert(concert: ConcertModel) {
 describe('main', () => {
     beforeEach(() => {
         vi.resetModules();
-        document.body.innerHTML = '<main id="app"></main>';
+        // aria-busy="true" replica el esqueleto estático de index.html: así
+        // los tests cubren que main() lo quita al terminar, con o sin error.
+        document.body.innerHTML = '<main id="app" aria-busy="true"></main>';
     });
 
     afterEach(() => {
@@ -41,6 +43,9 @@ describe('main', () => {
             Array.from(app?.querySelectorAll('.section-heading') ?? []).map((el) => el.textContent),
         ).toEqual(['Destacados', 'Revisa el catálogo de conciertos', 'Formulario de reserva']);
         expect(app?.querySelectorAll('.concert-card').length).toBe(concertsLists.length);
+        // El esqueleto de carga (aria-busy="true" en index.html) se apaga
+        // apenas termina el render.
+        expect(app?.hasAttribute('aria-busy')).toBe(false);
     });
 
     it('ordena las tarjetas por fecha ascendente sin mutar el array original de conciertos', async () => {
@@ -111,6 +116,8 @@ describe('main', () => {
             '[NeonPulse] Error inesperado al renderizar la app:',
             expect.any(Error),
         );
+        // El esqueleto de carga se apaga también cuando el render termina en error.
+        expect(app?.hasAttribute('aria-busy')).toBe(false);
     });
 
     it('muestra el fallback de error cuando el fetch de conciertos falla', async () => {

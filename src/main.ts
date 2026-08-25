@@ -17,6 +17,12 @@ async function main(): Promise<void> {
         // it half-rendered.
         console.error('[NeonPulse] Error inesperado al renderizar la app:', error);
         appContainer.replaceChildren(createErrorFallbackElement());
+    } finally {
+        // Se quita recién acá: renderCatalogView() y el catch de arriba
+        // reemplazan el innerHTML de #app (ver el esqueleto estático en
+        // index.html), pero aria-busy queda en el propio elemento y no se va
+        // solo con ese reemplazo.
+        appContainer.removeAttribute('aria-busy');
     }
 }
 
