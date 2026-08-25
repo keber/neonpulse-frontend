@@ -1,8 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { renderBookingFormView } from './bookingform.view';
+import { requireElement } from '@/lib/dom';
 
-// Dispara un submit "de verdad" (bubbling + cancelable) sin depender de
-// SubmitEvent, que no hace falta acá porque el handler no usa `submitter`.
+// Dispatches a "real" submit (bubbling + cancelable) without depending on
+// SubmitEvent, which isn't needed here since the handler doesn't use
+// `submitter`.
 function submit(form: HTMLFormElement): Event {
     const event = new Event('submit', { bubbles: true, cancelable: true });
     form.dispatchEvent(event);
@@ -13,9 +15,9 @@ describe('renderBookingFormView', () => {
     let container: HTMLElement;
 
     beforeEach(() => {
-        // Se agrega al document (no solo se crea suelto): focus()/blur()
-        // necesitan que el elemento esté en el árbol para actualizar
-        // document.activeElement de verdad.
+        // Attached to the document (not just created loose): focus()/blur()
+        // need the element in the tree to actually update
+        // document.activeElement.
         container = document.createElement('div');
         document.body.appendChild(container);
         renderBookingFormView(container);
@@ -28,10 +30,10 @@ describe('renderBookingFormView', () => {
 
     function getElements() {
         return {
-            form: container.querySelector<HTMLFormElement>('#bookingForm')!,
-            email: container.querySelector<HTMLInputElement>('#email')!,
-            quantity: container.querySelector<HTMLInputElement>('#quantity')!,
-            errorBox: container.querySelector<HTMLElement>('#errorBox')!,
+            form: requireElement<HTMLFormElement>(container, '#bookingForm'),
+            email: requireElement<HTMLInputElement>(container, '#email'),
+            quantity: requireElement<HTMLInputElement>(container, '#quantity'),
+            errorBox: requireElement<HTMLElement>(container, '#errorBox'),
         };
     }
 
@@ -69,8 +71,8 @@ describe('renderBookingFormView', () => {
     it('al perder el foco revisa todo el formulario, no solo el campo que lo disparó', () => {
         const { email, quantity, errorBox } = getElements();
 
-        // El email queda válido, pero cantidad sigue vacía: el mensaje debe
-        // ser el de cantidad, no desaparecer solo porque email ya está bien.
+        // Email ends up valid, but quantity is still empty: the message
+        // should be quantity's, not disappear just because email is fine now.
         email.value = 'user@example.com';
         email.focus();
         email.blur();
@@ -121,9 +123,9 @@ describe('renderBookingFormView', () => {
     });
 
     it('rechaza una cantidad decimal aunque sea aceptada por checkValidity nativo', () => {
-        // El default del step nativo (1) ya rechaza esto, así que este test
-        // documenta la redundancia intencional: booking.service.ts es la
-        // fuente de verdad aunque cambie el markup del <input>.
+        // The native step default (1) already rejects this, so this test
+        // documents the intentional redundancy: booking.service.ts is the
+        // source of truth even if the <input>'s markup changes.
         const { form, email, quantity, errorBox } = getElements();
         email.value = 'user@example.com';
         quantity.value = '3.5';
@@ -153,17 +155,17 @@ describe('renderBookingFormView', () => {
         vi.useFakeTimers();
         const { form, email, quantity, errorBox } = getElements();
 
-        submit(form); // error: campos vacíos, arranca su propio timer de 5s
+        submit(form); // error: empty fields, starts its own 5s timer
         vi.advanceTimersByTime(3000);
 
         email.value = 'user@example.com';
         quantity.value = '3';
-        submit(form); // éxito: reemplaza el mensaje y reinicia el timer
+        submit(form); // success: replaces the message and restarts the timer
 
-        vi.advanceTimersByTime(3000); // 3s desde el 2do mensaje (6s desde el 1ro)
+        vi.advanceTimersByTime(3000); // 3s since the 2nd message (6s since the 1st)
         expect(errorBox.hidden).toBe(false);
 
-        vi.advanceTimersByTime(2000); // completa los 5s del 2do mensaje
+        vi.advanceTimersByTime(2000); // completes the 2nd message's 5s
         expect(errorBox.hidden).toBe(true);
     });
 });

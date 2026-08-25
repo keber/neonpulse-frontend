@@ -1,27 +1,28 @@
 import { createBookingFormElement } from '@/components/BookingForm';
 import { type RawBookingInput, validateBooking } from '@/services/booking.service';
+import { requireElement } from '@/lib/dom';
 
-// Modificador BEM que reutiliza la misma caja de #errorBox para el mensaje
-// de éxito, en vez de crear un segundo elemento — ver BookingForm.css.
+// BEM modifier that reuses the same #errorBox for the success message
+// instead of creating a second element — see BookingForm.css.
 const SUCCESS_MODIFIER = 'error-box--success';
 
-// Debe coincidir con --message-timeout en BookingForm.css (la duración de
-// la animación de la barra de progreso) — acá se programa el cierre real.
+// Must match --message-timeout in BookingForm.css (the progress bar
+// animation's duration) — this is where the actual dismissal is scheduled.
 const MESSAGE_TIMEOUT_MS = 5000;
 
-// Orquesta el formulario de reserva: monta el componente (presentacional,
-// ver BookingForm.ts) y le engancha el comportamiento — evita el submit
-// nativo (que recargaría la página porque el <form> no tiene action),
-// valida en dos pasos (constraint validation del navegador primero,
-// booking.service.ts después) y muestra el resultado — error o éxito — en
-// #errorBox en vez de los tooltips nativos.
+// Orchestrates the booking form: mounts the component (presentational,
+// see BookingForm.ts) and wires up its behavior — prevents the native
+// submit (which would reload the page since the <form> has no action),
+// validates in two steps (the browser's constraint validation first,
+// then booking.service.ts) and shows the result — error or success — in
+// #errorBox instead of the native tooltips.
 export function renderBookingFormView(container: HTMLElement): void {
     container.appendChild(createBookingFormElement());
 
-    const form = container.querySelector<HTMLFormElement>('#bookingForm')!;
-    const emailInput = container.querySelector<HTMLInputElement>('#email')!;
-    const quantityInput = container.querySelector<HTMLInputElement>('#quantity')!;
-    const messageBox = container.querySelector<HTMLElement>('#errorBox')!;
+    const form = requireElement<HTMLFormElement>(container, '#bookingForm');
+    const emailInput = requireElement<HTMLInputElement>(container, '#email');
+    const quantityInput = requireElement<HTMLInputElement>(container, '#quantity');
+    const messageBox = requireElement<HTMLElement>(container, '#errorBox');
 
     const fieldElements: Record<keyof RawBookingInput, HTMLInputElement> = {
         email: emailInput,
@@ -38,9 +39,9 @@ export function renderBookingFormView(container: HTMLElement): void {
     function showMessage(text: string, isSuccess: boolean): void {
         clearTimeout(dismissTimer);
 
-        // Oculta el box un instante y fuerza un reflow: si ya estaba visible
-        // (p. ej. dos errores seguidos), la barra de progreso reinicia su
-        // animación desde el principio en vez de seguir donde iba.
+        // Hide the box for an instant and force a reflow: if it was already
+        // visible (e.g. two errors in a row), the progress bar restarts its
+        // animation from scratch instead of continuing where it was.
         messageBox.hidden = true;
         void messageBox.offsetWidth;
 
@@ -51,11 +52,12 @@ export function renderBookingFormView(container: HTMLElement): void {
         dismissTimer = setTimeout(hideMessage, MESSAGE_TIMEOUT_MS);
     }
 
-    // Primero la constraint validation del navegador (required, type=email,
-    // min/max con step=1 implícito) — sus mensajes ya vienen traducidos y
-    // cubren los casos más comunes (campo vacío, formato). Recién si eso
-    // pasa, se corre la validación de negocio (booking.service.ts), que es
-    // la que de verdad tipa el resultado y deja lugar a reglas futuras.
+    // First the browser's constraint validation (required, type=email,
+    // min/max with an implicit step=1) — its messages already come
+    // localized and cover the most common cases (empty field, format).
+    // Only once that passes does the business validation run
+    // (booking.service.ts), which is what actually types the result and
+    // leaves room for future rules.
     function runValidation(): ReturnType<typeof validateBooking> {
         const firstInvalid = form.querySelector<HTMLInputElement>(':invalid');
         if (firstInvalid) {
@@ -69,9 +71,9 @@ export function renderBookingFormView(container: HTMLElement): void {
         return validateBooking({ email: emailInput.value, quantity: quantityInput.value });
     }
 
-    // Revisa el formulario completo (no solo el campo que disparó el
-    // evento) para no pisar el mensaje de un campo distinto al perder el
-    // foco de uno que ya está bien.
+    // Checks the whole form (not just the field that triggered the event)
+    // so we don't overwrite a different field's message when one that's
+    // already valid loses focus.
     function validateAndReport(): ReturnType<typeof validateBooking> {
         const result = runValidation();
         if (result.valid) {
@@ -82,9 +84,9 @@ export function renderBookingFormView(container: HTMLElement): void {
         return result;
     }
 
-    // Como el form tiene novalidate, el navegador no valida solo en ningún
-    // momento — decidimos nosotros cuándo: acá, al perder el foco de
-    // cualquier campo, además del submit más abajo.
+    // Since the form has novalidate, the browser never validates on its
+    // own — we decide when: here, on blur of any field, plus on submit
+    // below.
     form.querySelectorAll<HTMLInputElement>('input').forEach((field) => {
         field.addEventListener('blur', () => validateAndReport());
     });
