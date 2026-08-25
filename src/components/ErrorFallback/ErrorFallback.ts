@@ -1,3 +1,5 @@
+import templateHtml from './ErrorFallback_template.html?raw';
+
 // Global fallback UI: mounted when something breaks the app's render. It
 // doesn't replace the expected empty states (catalog with no concerts, no
 // featured concert), which have their own message — this is the safety
@@ -8,6 +10,7 @@ export interface ErrorFallbackContent {
     message: string;
 }
 
+
 // Default: reserved for truly unexpected errors (a bug in the render
 // pipeline) — see main.ts's catch block, which picks a more specific
 // message when the failure is a known one (ConcertsFetchError).
@@ -17,12 +20,7 @@ const DEFAULT_CONTENT: ErrorFallbackContent = {
 };
 
 const TEMPLATE = document.createElement('template');
-TEMPLATE.innerHTML = `
-    <div class="error-fallback" role="alert">
-        <h2 class="error-fallback__title"></h2>
-        <p class="error-fallback__message"></p>
-    </div>
-`;
+TEMPLATE.innerHTML = templateHtml;
 
 export function createErrorFallbackElement(
     content: ErrorFallbackContent = DEFAULT_CONTENT,
