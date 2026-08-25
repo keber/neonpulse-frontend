@@ -7,6 +7,7 @@
 // hand (previously: escapeHtml()).
 import { type ConcertModel } from '@/models';
 import { getConcertDateParts } from '@/lib/concertDate';
+import { requireElement } from '@/lib/dom';
 import { icon } from '../icons';
 import { createStatusBadgeElement, getStatusModifier } from './StatusBadge';
 
@@ -35,18 +36,18 @@ export function createConcertCardElement(concert: ConcertModel): HTMLElement {
 
     const { day, month, year, isCurrentYear } = getConcertDateParts(concert.date);
 
-    card.querySelector('.concert-card__day')!.textContent = String(day);
-    card.querySelector('.concert-card__month')!.textContent = month;
+    requireElement(card, '.concert-card__day').textContent = String(day);
+    requireElement(card, '.concert-card__month').textContent = month;
     // The year is only shown for concerts that aren't in the current year.
-    card.querySelector('.concert-card__year')!.textContent = isCurrentYear ? '' : String(year);
+    requireElement(card, '.concert-card__year').textContent = isCurrentYear ? '' : String(year);
 
-    card.querySelector('.concert-card__body')!.prepend(createStatusBadgeElement(concert.status));
-    card.querySelector('.concert-card__title')!.textContent = concert.title;
-    card.querySelector('.concert-card__band')!.textContent = concert.band;
+    requireElement(card, '.concert-card__body').prepend(createStatusBadgeElement(concert.status));
+    requireElement(card, '.concert-card__title').textContent = concert.title;
+    requireElement(card, '.concert-card__band').textContent = concert.band;
 
-    card.querySelector('.concert-card__location')!.append(icon('map-pin'), ` ${concert.location}`);
+    requireElement(card, '.concert-card__location').append(icon('map-pin'), ` ${concert.location}`);
 
-    const timeEl = card.querySelector<HTMLElement>('.concert-card__time')!;
+    const timeEl = requireElement<HTMLElement>(card, '.concert-card__time');
     if (concert.time) {
         timeEl.append(icon('clock'), ` ${concert.time}`);
     } else {

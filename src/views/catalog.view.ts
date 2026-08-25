@@ -3,6 +3,7 @@ import { getConcerts } from '@/services/concert.service';
 import { createConcertCardElement } from '@/components/ConcertCard';
 import { createFeaturedBannerElement } from '@/components/FeaturedBanner';
 import { renderBookingFormView } from '@/views/bookingform.view';
+import { requireElement } from '@/lib/dom';
 
 const CATALOG_EMPTY_MESSAGE = 'No hay conciertos programados por el momento. ¡Vuelve pronto!';
 
@@ -41,9 +42,9 @@ function renderShell(container: HTMLElement): CatalogSections {
         `;
 
     return {
-        featuredContainer: container.querySelector<HTMLElement>('#featured-banner')!,
-        catalogContainer: container.querySelector<HTMLElement>('#catalog-container')!,
-        bookingFormContainer: container.querySelector<HTMLElement>('#booking-form-container')!,
+        featuredContainer: requireElement<HTMLElement>(container, '#featured-banner'),
+        catalogContainer: requireElement<HTMLElement>(container, '#catalog-container'),
+        bookingFormContainer: requireElement<HTMLElement>(container, '#booking-form-container'),
     };
 }
 
@@ -74,6 +75,6 @@ export async function renderCatalogView(container: HTMLElement): Promise<void> {
 
     renderFeatured(featuredContainer, concerts);
     renderCatalog(catalogContainer, concerts);
-    //TODO: render Booking Form - concert o concerts?
+    // TODO: render Booking Form - concert or concerts?
     renderBookingFormView(bookingFormContainer);
 }

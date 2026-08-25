@@ -120,7 +120,7 @@ describe('main', () => {
         expect(app?.hasAttribute('aria-busy')).toBe(false);
     });
 
-    it('muestra el fallback de error cuando el fetch de conciertos falla', async () => {
+    it('muestra el fallback de error con un mensaje específico cuando el fetch de conciertos falla', async () => {
         vi.spyOn(console, 'error').mockImplementation(() => {});
         vi.stubGlobal(
             'fetch',
@@ -131,5 +131,22 @@ describe('main', () => {
 
         const app = document.getElementById('app');
         expect(app?.querySelector('.error-fallback')).not.toBeNull();
+        // A known fetch failure gets a more specific message than the
+        // generic "algo salió mal" reserved for unexpected bugs.
+        expect(app?.querySelector('.error-fallback__title')?.textContent).toBe(
+            'No pudimos cargar la cartelera',
+        );
+    });
+
+    it('muestra el fallback específico (no el genérico) cuando el fetch de conciertos falla por red', async () => {
+        vi.spyOn(console, 'error').mockImplementation(() => {});
+        vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new TypeError('Failed to fetch')));
+
+        await import('./main');
+
+        const app = document.getElementById('app');
+        expect(app?.querySelector('.error-fallback__title')?.textContent).toBe(
+            'No pudimos cargar la cartelera',
+        );
     });
 });
